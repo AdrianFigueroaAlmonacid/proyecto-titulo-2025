@@ -24,10 +24,10 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwFilter  extends OncePerRequestFilter {
 
 
-    private JwUtil jwUtil;
+    private final JwUtil jwUtil;
 
     
-    private UserDetailsService userDetailService;
+    private final UserDetailsService userDetailService;
 
     
     

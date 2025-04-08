@@ -33,7 +33,7 @@ public class UserRoleEntity {
     private LocalDateTime grantedDate;
 
     @ManyToOne
-    @JoinColumn(name = "username", referencedColumnName = "username", insertable = false, updatable = false)
+    @JoinColumn(name = "username", referencedColumnName = "username", insertable = false, updatable = true)
     private UserEntity user;
 
 }

@@ -32,7 +32,7 @@ public class UserEntity  implements Serializable{
 
     @Id
     @Column(name = "id_users")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idUser;
 
     @Column(nullable = false, length = 200)
@@ -50,24 +50,21 @@ public class UserEntity  implements Serializable{
     @Column(name = "last_name")
     private String lastName;
 
-    @ManyToOne
-    private StoreEntity store;
-
     @Column(name = "register_date", updatable = false)
     private LocalDateTime registerDate;
 
     @Column(nullable = false, columnDefinition = "TINYINT")
     private Boolean locked;
 
-    @Column(nullable = false, columnDefinition = "TINYINT")
+    @Column( nullable = false, columnDefinition = "TINYINT")
     private Boolean disabled;
 
-    @OneToMany(mappedBy = "admin",cascade = CascadeType.REMOVE)
-    private List<StoreEntity> stores;
 
+    @ManyToOne
+    private StoreEntity store;
+    
 
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER,cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER,cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<UserRoleEntity> roles;
 
 

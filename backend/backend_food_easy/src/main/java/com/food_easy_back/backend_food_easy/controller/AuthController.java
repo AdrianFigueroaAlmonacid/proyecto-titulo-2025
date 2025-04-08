@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.food_easy_back.backend_food_easy.config.JwUtil;
+import com.food_easy_back.backend_food_easy.model.dto.LoginRequestDto;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -30,16 +31,16 @@ public class AuthController {
 
 
     @PostMapping
-    public ResponseEntity<?> LogIn(@RequestBody String username, String password){
+    public ResponseEntity<?> LogIn(@RequestBody LoginRequestDto login){
 
         try {
-            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username,password);
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(login.getUsername(),login.getPassword());
 
             Authentication authentication = this.authenticationManager.authenticate(token);
 
             System.out.println("Usuario autenticado: " + authentication.getPrincipal());
 
-            String jwt = this.jwUtil.create(username);
+            String jwt = this.jwUtil.create(login.getUsername());
 
             return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.AUTHORIZATION,jwt).build();
         } catch (Exception e) {

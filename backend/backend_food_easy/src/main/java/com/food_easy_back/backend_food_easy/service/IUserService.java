@@ -1,11 +1,14 @@
 package com.food_easy_back.backend_food_easy.service;
 
-import com.food_easy_back.backend_food_easy.model.dto.UserDto;
+import com.food_easy_back.backend_food_easy.model.dto.UserCreateRequestDto;
+import com.food_easy_back.backend_food_easy.model.dto.UserUpdateRequestDto;
 import com.food_easy_back.backend_food_easy.model.entity.UserEntity;
 
 public interface IUserService {
 
-    UserEntity save(UserDto userdto);
+    UserEntity saveUser(UserCreateRequestDto userdto);
+
+    UserEntity updateUser(UserUpdateRequestDto userdto);
     
     UserEntity findById(Integer id);
 

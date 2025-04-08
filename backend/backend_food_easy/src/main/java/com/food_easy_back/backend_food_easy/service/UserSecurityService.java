@@ -46,11 +46,15 @@ public class UserSecurityService implements UserDetailsService {
     }
 
     private String[] getAuthorities(String role) {
-        if ("ADMIN".equals(role) || "CUSTOMER".equals(role)) {
-            return new String[] {"random_order"};
+        if ("ADMIN".equals(role)) {
+            return new String[] {"delete_owner","add_owner"};
+        }else if("SUPER_OWNER".equals(role)){
+            return new String [] {"delete_business"};
+        }else if("OWNER".equals(role)){
+            return new String [] {"generate_report", "delete_user","add_user"};
+        }else{
+            return new String [] {"sell_product","add_product","delete_product","edit_product"};
         }
-
-        return new String[] {};
     }
 
     private List<GrantedAuthority> grantedAuthorities(String [] roles ){

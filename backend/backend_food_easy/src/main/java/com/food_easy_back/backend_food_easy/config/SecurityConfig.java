@@ -1,6 +1,7 @@
 package com.food_easy_back.backend_food_easy.config;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,11 +14,22 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
 
+    private final JwFilter jwFilter;
 
+    
+
+    @Autowired
+    public SecurityConfig(JwFilter jwFilter) {
+        this.jwFilter = jwFilter;
+    }
+
+
+    //Metodo que hace de security filter chain
     @Bean
     public SecurityFilterChain filterChain (HttpSecurity http) throws Exception{
 
@@ -27,26 +39,25 @@ public class SecurityConfig {
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(customizeRequests -> {
                 customizeRequests
-                        .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/v1/*").hasAuthority("random_order")
-                        .requestMatchers(HttpMethod.GET,"/api/v1/*").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/v1/*").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/auth").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/user/owner").hasRole("ADMIN")
                         .anyRequest()
                         .authenticated();
                 }
                 )
-            .httpBasic(Customizer.withDefaults());
+            .addFilterBefore(jwFilter, UsernamePasswordAuthenticationFilter.class);
 
             return http.build();
     }
 
 
+    //Metodo para codificar el password
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
 
+    //Metodo para autenticar al usuario
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration ) throws Exception{
         return configuration.getAuthenticationManager();

@@ -1,14 +1,13 @@
 package com.food_easy_back.backend_food_easy.model.entity;
 
 import java.util.List;
-import java.util.Locale.Category;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,14 +25,11 @@ import lombok.ToString;
 public class StoreEntity {
 
     @Id 
-    @GeneratedValue
-    private Long idStore;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer idStore;
 
     @Column(name = "name")
     private String name;
-
-    @ManyToOne
-    private UserEntity admin;
 
 
     @OneToMany(mappedBy = "store",cascade = CascadeType.REMOVE)
@@ -41,6 +37,6 @@ public class StoreEntity {
 
     
     @OneToMany(mappedBy = "store", cascade = CascadeType.REMOVE)
-    private List<Category> categories;
+    private List<CategoryEntity> categories;
 
 }
