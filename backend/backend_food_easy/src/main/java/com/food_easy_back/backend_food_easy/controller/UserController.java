@@ -1,11 +1,14 @@
 package com.food_easy_back.backend_food_easy.controller;
 
+
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,16 +17,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.food_easy_back.backend_food_easy.model.dto.OwnerCreateRequestDto;
-import com.food_easy_back.backend_food_easy.model.dto.StoreCreateRequestDto;
 import com.food_easy_back.backend_food_easy.model.dto.UserCreateRequestDto;
 import com.food_easy_back.backend_food_easy.model.dto.UserDto;
+import com.food_easy_back.backend_food_easy.model.dto.UserListDto;
 import com.food_easy_back.backend_food_easy.model.dto.UserUpdateRequestDto;
-import com.food_easy_back.backend_food_easy.model.entity.StoreEntity;
 import com.food_easy_back.backend_food_easy.model.entity.UserEntity;
 import com.food_easy_back.backend_food_easy.model.payload.ResponseMessage;
-import com.food_easy_back.backend_food_easy.service.IStoreService;
 import com.food_easy_back.backend_food_easy.service.IUserService;
 
 
@@ -33,17 +35,16 @@ import com.food_easy_back.backend_food_easy.service.IUserService;
 public class UserController {
 
     private final IUserService userService;
-    private final PasswordEncoder passwordEncoder;
-    private final IStoreService storeService;
 
     
     @Autowired
-    public UserController(IUserService userService, PasswordEncoder passwordEncoder, IStoreService storeService) {
+    public UserController(IUserService userService) {
         this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
-        this.storeService = storeService;
     }
 
+    //AQUI ESTAN LOS GET
+
+    //Endpoint para recuperar el usuario de la sesion actual, ver tu perfil,
     @GetMapping
     public ResponseEntity<?> getUser(){
        try {
@@ -53,6 +54,7 @@ public class UserController {
                                 .lastName(user.getLastName())
                                 .email(user.getEmail())
                                 .username(user.getUsername())
+                                .role(userService.setPosition(user.getRoles()))
                                 .build();
         ResponseMessage response = ResponseMessage.builder()
                                 .message("Usuario recuperado correctamente")
@@ -70,26 +72,29 @@ public class UserController {
 
        }
     }
-    @GetMapping("/business")
-    public ResponseEntity<?> getUsersBusiness(){
+
+    //Endpoint para recuperar todos los usuarios de un negocio
+    @GetMapping("/store")
+    public ResponseEntity<?> getUsersBusiness(Pageable pageable){
        try {
-        UserEntity user = userService.findById(id);
-        UserDto userdto = UserDto.builder()
-                                .name(user.getName())
-                                .lastName(user.getLastName())
-                                .email(user.getEmail())
-                                .username(user.getUsername())
-                                .build();
+
+        Page<UserEntity> usersPage = userService.getUsersByStore( pageable);
+        Page<UserListDto> dtoPage = usersPage.map(u -> UserListDto.builder()
+                                        .IdUser(u.getIdUser())
+                                        .name(u.getName())
+                                        .position(userService.setPosition(u.getRoles()))
+                                        .admin(userService.setPosition(u.getRoles())=="ADMIN"? true: false)
+                                        .build());
         ResponseMessage response = ResponseMessage.builder()
-                                .message("Usuario recuperado correctamente")
-                                .object(userdto)
+                                .message("Usuarios recuperados correctamente")
+                                .object(dtoPage)
                                 .build();
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
         
        } catch (Exception e) {
         ResponseMessage error = ResponseMessage.builder()
-                                .message("Error al recuperar usuario")
+                                .message("Error al recuperar usuarios")
                                 .object(null)
                                 .build();
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
@@ -97,73 +102,47 @@ public class UserController {
        }
     }
 
-    //Metodo para los owner que crean usuarios
+    //AQUI ESTAN LOS POST 
+
+    //Endpoint para los owner y admin que crean usuarios
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody UserCreateRequestDto userDto){
+    public ResponseEntity<?> createUserByAdmin(@RequestBody UserCreateRequestDto userDto){
 
         try {
-            
-            if (userService.existUsername(userDto.getUsername())){
-                ResponseMessage error = ResponseMessage.builder()
-                                    .message("Usuario esta actualmente registrado")
+
+            UserEntity user = userService.saveUserByAdmin(userDto);
+            UserDto userdto = UserDto.builder()
+                                .username(user.getUsername())
+                                .build();
+            ResponseMessage response = ResponseMessage.builder()
+                                        .message("Usuario creado con exito")
+                                        .object(userdto)
+                                        .build();
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        
+        }catch(ResponseStatusException e){
+            ResponseMessage error = ResponseMessage.builder()
+                                    .message(e.getReason())
                                     .object(null)
                                     .build();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-            }else{
-                userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
-                UserEntity admin= userService.findByUsername(getCurrentUsername());
-                Integer store= admin.getStore().getIdStore();
-                userDto.setStore(store);
-                UserEntity user = userService.saveUser(userDto);
-                UserDto userdto = UserDto.builder()
-                                    .username(user.getUsername())
-                                    .build();
-                ResponseMessage response = ResponseMessage.builder()
-                                            .message("Usuario creado con exito")
-                                            .object(userdto)
-                                            .build();
-                return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         
-            }
         } catch (Exception e) {
             ResponseMessage error = ResponseMessage.builder()
                                     .message("Error al crear usuario: " + e.getMessage())
                                     .object(null)
                                     .build();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-        }   
+        }
+
     }
 
-    //Metodo para el admin que crea negocios y owner
-    @PostMapping("/owner")
+    //Endpoint para el admin_system que crea negocios y owner
+    @PostMapping("/admin")
     public ResponseEntity<?> createOwner(@RequestBody OwnerCreateRequestDto requestDto){
-
-
-
         try {
-            UserCreateRequestDto userDto = requestDto.getUser();
-            StoreCreateRequestDto storeDto = requestDto.getStore();
-            System.out.println(requestDto.getUser().getLastname());
-            
-            if (userService.existUsername(userDto.getUsername())){
-                ResponseMessage error = ResponseMessage.builder()
-                                    .message("Usuario esta actualmente registrado")
-                                    .object(null)
-                                    .build();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-            }else if(storeService.existStore(storeDto.getName())){
-                ResponseMessage error = ResponseMessage.builder()
-                                    .message("Negocio esta actualmente registrado")
-                                    .object(null)
-                                    .build();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-            }else{
-                
-                StoreEntity storeEntity = storeService.saveStore(storeDto);
-                userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
-                Integer store= storeEntity.getIdStore();
-                userDto.setStore(store);
-                UserEntity user = userService.saveUser(userDto);
+
+                UserEntity user = userService.saveOwner(requestDto);
                 UserDto userdto = UserDto.builder()
                                     .username(user.getUsername())
                                     .lastName(user.getLastName())
@@ -173,8 +152,14 @@ public class UserController {
                                             .object(userdto)
                                             .build();
                 return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+        }catch(ResponseStatusException e){
+            ResponseMessage error = ResponseMessage.builder()
+                                    .message(e.getReason())
+                                    .object(null)
+                                    .build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         
-            }
         } catch (Exception e) {
             ResponseMessage error = ResponseMessage.builder()
                                     .message("Error al crear owner: " + e.getMessage())
@@ -184,29 +169,29 @@ public class UserController {
         }   
     }
 
+    //AQUI ESTAN LOS PUT
+
+    //Endpoint para modificar usuario
     @PutMapping
     public ResponseEntity<?> modifyUser(@RequestBody UserUpdateRequestDto userDto){
 
         try {      
-            if (userService.existUsername(userDto.getUsername())){
-                userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
-                UserEntity user = userService.updateUser(userDto);
-                UserDto userdto = UserDto.builder()
-                                    .username(user.getUsername())
+            UserEntity user = userService.updateUser(userDto);
+            UserDto userdto = UserDto.builder()
+                                .username(user.getUsername())
+                                .build();
+            ResponseMessage response = ResponseMessage.builder()
+                                        .message("Usuario modificado con exito")
+                                        .object(userdto)
+                                        .build();
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }catch(ResponseStatusException e){
+            ResponseMessage error = ResponseMessage.builder()
+                                    .message(e.getReason())
+                                    .object(null)
                                     .build();
-                ResponseMessage response = ResponseMessage.builder()
-                                            .message("Usuario modificado con exito")
-                                            .object(userdto)
-                                            .build();
-                return ResponseEntity.status(HttpStatus.OK).body(response);
-            }else{
-                ResponseMessage error = ResponseMessage.builder()
-                .message("Usuario no esta registrado")
-                .object(null)
-                .build();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         
-            }
         } catch (Exception e) {
             ResponseMessage error = ResponseMessage.builder()
                                     .message("Error al crear usuario: " + e.getMessage())
@@ -217,12 +202,11 @@ public class UserController {
 
     }
 
+    //AQUI ESTAN LOS DELETE
+
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Integer id){
-        UserEntity user = userService.findById(id);
-        if (user!=null){
-            userService.delete(user);
-        }
+        userService.delete(id);
     }
 
     public String getCurrentUsername() {

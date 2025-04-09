@@ -17,11 +17,11 @@ import lombok.ToString;
 public class UserDto implements Serializable{
 
     private Integer IdUser;
-    private String password;
     private String email;
     private String name;
     private String username;
     private String lastName;
+    private String role;
     private Integer store;
 
 

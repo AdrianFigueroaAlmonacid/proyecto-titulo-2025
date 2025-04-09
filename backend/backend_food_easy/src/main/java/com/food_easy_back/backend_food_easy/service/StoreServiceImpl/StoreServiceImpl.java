@@ -1,7 +1,9 @@
 package com.food_easy_back.backend_food_easy.service.StoreServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.food_easy_back.backend_food_easy.model.dao.StoreDao;
 import com.food_easy_back.backend_food_easy.model.dto.StoreCreateRequestDto;
@@ -22,6 +24,11 @@ public class StoreServiceImpl implements IStoreService{
 
     @Override
     public StoreEntity saveStore(StoreCreateRequestDto storedto) {
+
+        String name = storedto.getName();
+        if(existStore(name)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El negocio ya existe" );
+        }
         StoreEntity storeEntity= StoreEntity.builder()
                                             .name(storedto.getName())
                                             .build();

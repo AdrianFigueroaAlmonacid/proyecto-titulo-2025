@@ -1,6 +1,7 @@
 package com.food_easy_back.backend_food_easy.config;
 
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Component;
@@ -20,13 +21,14 @@ public class JwUtil {
     private static Algorithm ALGORITHM = Algorithm.HMAC256(SECRET_KEY);
 
     //Metodo para crear un jwt con un username
-    public String create(String username){
+    public String create(String username, List<String> roles){
 
         return JWT.create()
                 .withSubject(username)
                 .withIssuer("user-app")
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis()+ TimeUnit.DAYS.toMillis(15)))
+                .withClaim("roles", roles)
                 .sign(ALGORITHM);
     }
 

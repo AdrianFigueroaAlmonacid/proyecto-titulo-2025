@@ -46,15 +46,18 @@ public class UserSecurityService implements UserDetailsService {
     }
 
     private String[] getAuthorities(String role) {
-        if ("ADMIN".equals(role)) {
-            return new String[] {"delete_owner","add_owner"};
-        }else if("SUPER_OWNER".equals(role)){
-            return new String [] {"delete_business"};
-        }else if("OWNER".equals(role)){
-            return new String [] {"generate_report", "delete_user","add_user"};
-        }else{
-            return new String [] {"sell_product","add_product","delete_product","edit_product"};
+
+        switch(role){
+            case "ADMIN_SYSTEM":
+                return new String[] {"delete_owner","add_owner"};
+            case "OWNER":
+                return new String [] {"delete_business"};
+            case "ADMIN":
+                return new String [] {"generate_report", "delete_user","add_user"};
+            case "USER":
+                return new String [] {"sell_product","add_product","delete_product","edit_product"};
         }
+        return new String[0];
     }
 
     private List<GrantedAuthority> grantedAuthorities(String [] roles ){

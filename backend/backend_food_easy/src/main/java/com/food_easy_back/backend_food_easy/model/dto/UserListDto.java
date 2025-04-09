@@ -7,16 +7,13 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString
 @Builder
-public class UserUpdateRequestDto {
-
-    private Integer id;
-    private String email;
+public class UserListDto {
+    private Integer IdUser;
     private String name;
-    private String username;
-    private String lastName;
-
+    private String position;
+    private boolean admin;
 }
