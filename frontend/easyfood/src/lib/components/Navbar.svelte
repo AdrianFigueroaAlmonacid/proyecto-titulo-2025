@@ -34,9 +34,9 @@
 </nav>
 
 <style>
-	.navbar {
+	/* .navbar {
 		background-color: #f8f9fa;
-	}
+	} */
 
 	.navbar-brand {
 		font-weight: bold;
@@ -47,6 +47,6 @@
 	} */
 
 	.nav-link {
-		font-size: 1.1rem;
+		font-size: 1.2rem;
 	}
 </style>
