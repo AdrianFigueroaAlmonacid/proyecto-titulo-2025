@@ -10,8 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.food_easy_back.backend_food_easy.model.dto.ProductSaveRequestDto;
-import com.food_easy_back.backend_food_easy.model.dto.ProductUpdateRequestDto;
+import com.food_easy_back.backend_food_easy.model.dto.product.ProductSaveDto;
+import com.food_easy_back.backend_food_easy.model.dto.product.ProductSellDto;
+import com.food_easy_back.backend_food_easy.model.dto.product.ProductUpdateDto;
 import com.food_easy_back.backend_food_easy.model.entity.ProductEntity;
 import com.food_easy_back.backend_food_easy.model.payload.ResponseMessage;
 import com.food_easy_back.backend_food_easy.service.IProductService;
@@ -29,11 +30,12 @@ public class ProductController {
     }
 
     
+    //Endpoint para guardar producto
     @PostMapping
-    public ResponseEntity <?> saveProduct(@RequestBody ProductSaveRequestDto productDto ){
+    public ResponseEntity <?> saveProduct(@RequestBody ProductSaveDto productDto ){
         try{
             ProductEntity product = productService.saveProduct(productDto);
-            ProductSaveRequestDto productdto = ProductSaveRequestDto.builder()
+            ProductSaveDto productdto = ProductSaveDto.builder()
                                                 .name(product.getName())
                                                 .price(product.getPrice())
                                                 .build();
@@ -59,15 +61,16 @@ public class ProductController {
     }
 
     @PostMapping("/sell")
-    public ResponseEntity <?> saveProduct(@RequestBody ProductSaveRequestDto productDto ){
+    public ResponseEntity <?> sellProduct(@RequestBody ProductSellDto productDto ){
         try{
-            ProductEntity product = productService.saveProduct(productDto);
-            ProductSaveRequestDto productdto = ProductSaveRequestDto.builder()
+            ProductEntity product = productService.sellProduct(productDto);
+            ProductSaveDto productdto = ProductSaveDto.builder()
                                                 .name(product.getName())
                                                 .price(product.getPrice())
+                                                .quantity(productDto.getQuantity())
                                                 .build();
             ResponseMessage response = ResponseMessage.builder()
-                                .message("Producto guardado correctamente")
+                                .message("Producto vendido correctamente por la cantidad de: " + productDto.getQuantity())
                                 .object(productdto)
                                 .build();
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
@@ -79,7 +82,7 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }catch(Exception e){
             ResponseMessage error = ResponseMessage.builder()
-                                    .message("Error al crear producto: " + e.getMessage())
+                                    .message("Error al vender producto: " + e.getMessage())
                                     .object(null)
                                     .build();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
@@ -87,10 +90,10 @@ public class ProductController {
 
     }
     @PutMapping
-    public ResponseEntity <?> updateProduct(@RequestBody ProductUpdateRequestDto productDto ){
+    public ResponseEntity <?> updateProduct(@RequestBody ProductUpdateDto productDto ){
         try{
             ProductEntity product = productService.updateProduct(productDto);
-            ProductSaveRequestDto productdto = ProductSaveRequestDto.builder()
+            ProductSaveDto productdto = ProductSaveDto.builder()
                                                 .name(product.getName())
                                                 .price(product.getPrice())
                                                 .build();

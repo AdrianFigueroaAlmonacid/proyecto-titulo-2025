@@ -19,11 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.food_easy_back.backend_food_easy.model.dto.OwnerCreateRequestDto;
-import com.food_easy_back.backend_food_easy.model.dto.UserCreateRequestDto;
+import com.food_easy_back.backend_food_easy.model.dto.OwnerCreateDto;
+import com.food_easy_back.backend_food_easy.model.dto.UserCreateDto;
 import com.food_easy_back.backend_food_easy.model.dto.UserDto;
 import com.food_easy_back.backend_food_easy.model.dto.UserListDto;
-import com.food_easy_back.backend_food_easy.model.dto.UserUpdateRequestDto;
+import com.food_easy_back.backend_food_easy.model.dto.UserUpdateDto;
 import com.food_easy_back.backend_food_easy.model.entity.UserEntity;
 import com.food_easy_back.backend_food_easy.model.payload.ResponseMessage;
 import com.food_easy_back.backend_food_easy.service.IUserService;
@@ -106,7 +106,7 @@ public class UserController {
 
     //Endpoint para los owner y admin que crean usuarios
     @PostMapping
-    public ResponseEntity<?> createUserByAdmin(@RequestBody UserCreateRequestDto userDto){
+    public ResponseEntity<?> createUserByAdmin(@RequestBody UserCreateDto userDto){
 
         try {
 
@@ -139,7 +139,7 @@ public class UserController {
 
     //Endpoint para el admin_system que crea negocios y owner
     @PostMapping("/admin")
-    public ResponseEntity<?> createOwner(@RequestBody OwnerCreateRequestDto requestDto){
+    public ResponseEntity<?> createOwner(@RequestBody OwnerCreateDto requestDto){
         try {
 
                 UserEntity user = userService.saveOwner(requestDto);
@@ -173,7 +173,7 @@ public class UserController {
 
     //Endpoint para modificar usuario
     @PutMapping
-    public ResponseEntity<?> modifyUser(@RequestBody UserUpdateRequestDto userDto){
+    public ResponseEntity<?> modifyUser(@RequestBody UserUpdateDto userDto){
 
         try {      
             UserEntity user = userService.updateUser(userDto);

@@ -2,7 +2,7 @@ package com.food_easy_back.backend_food_easy.model.entity;
 
 
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -6,19 +6,19 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.food_easy_back.backend_food_easy.model.dto.OwnerCreateRequestDto;
-import com.food_easy_back.backend_food_easy.model.dto.UserCreateRequestDto;
-import com.food_easy_back.backend_food_easy.model.dto.UserUpdateRequestDto;
+import com.food_easy_back.backend_food_easy.model.dto.OwnerCreateDto;
+import com.food_easy_back.backend_food_easy.model.dto.UserCreateDto;
+import com.food_easy_back.backend_food_easy.model.dto.UserUpdateDto;
 import com.food_easy_back.backend_food_easy.model.entity.UserEntity;
 import com.food_easy_back.backend_food_easy.model.entity.UserRoleEntity;
 
 public interface IUserService {
 
-    UserEntity saveUserByAdmin(UserCreateRequestDto userdto);
+    UserEntity saveUserByAdmin(UserCreateDto userdto);
 
-    UserEntity saveOwner(OwnerCreateRequestDto requestDto);
+    UserEntity saveOwner(OwnerCreateDto requestDto);
 
-    UserEntity updateUser(UserUpdateRequestDto userdto);
+    UserEntity updateUser(UserUpdateDto userdto);
     
     UserEntity findById(Integer id);
 

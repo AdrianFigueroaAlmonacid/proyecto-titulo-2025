@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.food_easy_back.backend_food_easy.model.dao.StoreDao;
-import com.food_easy_back.backend_food_easy.model.dto.StoreCreateRequestDto;
+import com.food_easy_back.backend_food_easy.model.dto.StoreCreateDto;
 import com.food_easy_back.backend_food_easy.model.entity.StoreEntity;
 import com.food_easy_back.backend_food_easy.service.IStoreService;
 
@@ -23,7 +23,7 @@ public class StoreServiceImpl implements IStoreService{
     }
 
     @Override
-    public StoreEntity saveStore(StoreCreateRequestDto storedto) {
+    public StoreEntity saveStore(StoreCreateDto storedto) {
 
         String name = storedto.getName();
         if(existStore(name)){

@@ -17,10 +17,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.food_easy_back.backend_food_easy.model.dao.StoreDao;
 import com.food_easy_back.backend_food_easy.model.dao.UserDao;
-import com.food_easy_back.backend_food_easy.model.dto.OwnerCreateRequestDto;
-import com.food_easy_back.backend_food_easy.model.dto.StoreCreateRequestDto;
-import com.food_easy_back.backend_food_easy.model.dto.UserCreateRequestDto;
-import com.food_easy_back.backend_food_easy.model.dto.UserUpdateRequestDto;
+import com.food_easy_back.backend_food_easy.model.dto.OwnerCreateDto;
+import com.food_easy_back.backend_food_easy.model.dto.StoreCreateDto;
+import com.food_easy_back.backend_food_easy.model.dto.UserCreateDto;
+import com.food_easy_back.backend_food_easy.model.dto.UserUpdateDto;
 import com.food_easy_back.backend_food_easy.model.entity.StoreEntity;
 import com.food_easy_back.backend_food_easy.model.entity.UserEntity;
 import com.food_easy_back.backend_food_easy.model.entity.UserRoleEntity;
@@ -51,7 +51,7 @@ public class UserServiceImpl implements IUserService {
     //Metodo para guardar el usuario desde el owner
     @Transactional
     @Override
-    public UserEntity saveUserByAdmin(UserCreateRequestDto userdto) {
+    public UserEntity saveUserByAdmin(UserCreateDto userdto) {
 
         if(existUsername(userdto.getUsername())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario ya existe" );
@@ -90,9 +90,9 @@ public class UserServiceImpl implements IUserService {
     //Metodo para guardar el usuario owner y el negocio desde el admin
     @Transactional
     @Override
-    public UserEntity saveOwner(OwnerCreateRequestDto requestDto) {
-        UserCreateRequestDto userDto = requestDto.getUser();
-        StoreCreateRequestDto storeDto = requestDto.getStore();
+    public UserEntity saveOwner(OwnerCreateDto requestDto) {
+        UserCreateDto userDto = requestDto.getUser();
+        StoreCreateDto storeDto = requestDto.getStore();
         if(existUsername(userDto.getUsername())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario ya existe" );
         }
@@ -132,7 +132,7 @@ public class UserServiceImpl implements IUserService {
     //Metodo para actualizar un usuario 
     @Transactional
     @Override
-    public UserEntity updateUser(UserUpdateRequestDto userdto) {
+    public UserEntity updateUser(UserUpdateDto userdto) {
 
         if(!existUsername(userdto.getUsername()) || findById(userdto.getId()) != null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no esta registrado" );

@@ -11,12 +11,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class UserUpdateRequestDto {
-
-    private Integer id;
-    private String email;
-    private String name;
-    private String username;
-    private String lastName;
-
+public class OwnerCreateDto {
+    private UserCreateDto user;
+    private StoreCreateDto store;
 }

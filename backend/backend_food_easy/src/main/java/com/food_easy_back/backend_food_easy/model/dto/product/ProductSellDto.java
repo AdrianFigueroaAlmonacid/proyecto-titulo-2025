@@ -1,4 +1,4 @@
-package com.food_easy_back.backend_food_easy.model.dto;
+package com.food_easy_back.backend_food_easy.model.dto.product;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,8 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class StoreCreateRequestDto {
-    String name;
+public class ProductSellDto {
 
+    private Integer quantity;
+    private Long id;
 }

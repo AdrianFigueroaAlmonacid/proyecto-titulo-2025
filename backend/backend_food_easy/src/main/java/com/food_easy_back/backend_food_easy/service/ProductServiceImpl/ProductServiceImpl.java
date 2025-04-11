@@ -9,8 +9,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.food_easy_back.backend_food_easy.model.dao.ProductDao;
 import com.food_easy_back.backend_food_easy.model.dao.UserDao;
-import com.food_easy_back.backend_food_easy.model.dto.ProductSaveRequestDto;
-import com.food_easy_back.backend_food_easy.model.dto.ProductUpdateRequestDto;
+import com.food_easy_back.backend_food_easy.model.dto.product.ProductSaveDto;
+import com.food_easy_back.backend_food_easy.model.dto.product.ProductSellDto;
+import com.food_easy_back.backend_food_easy.model.dto.product.ProductUpdateDto;
 import com.food_easy_back.backend_food_easy.model.entity.CategoryEntity;
 import com.food_easy_back.backend_food_easy.model.entity.ProductEntity;
 import com.food_easy_back.backend_food_easy.model.entity.UserEntity;
@@ -41,7 +42,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Transactional
     @Override
-    public ProductEntity saveProduct(ProductSaveRequestDto productDto) {
+    public ProductEntity saveProduct(ProductSaveDto productDto) {
 
 
 
@@ -60,7 +61,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Transactional
     @Override
-    public ProductEntity updateProduct(ProductUpdateRequestDto productDto) {
+    public ProductEntity updateProduct(ProductUpdateDto productDto) {
 
 
 
@@ -101,6 +102,21 @@ public class ProductServiceImpl implements IProductService {
             return ((UserDetails) principal).getUsername();
         } else {
             return principal.toString();
+        }
+    }
+
+
+
+
+    @Override
+    public ProductEntity sellProduct(ProductSellDto productDto) {
+        ProductEntity product = productDao.findById(productDto.getId()).orElseThrow(() -> new EntityNotFoundException("Producto no encontrado."));
+
+        if((product.getQuantity() - productDto.getQuantity())<0){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No puedes vender mas productos de los que hay en stock." );
+        }else{
+            product.setQuantity(product.getQuantity()-productDto.getQuantity());
+            return productDao.save(product);
         }
     }
 
