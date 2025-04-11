@@ -30,6 +30,6 @@ public interface IUserService {
 
     Page<UserEntity> getUsersByStore(Pageable pageable);
 
-    String setPosition(List<UserRoleEntity> roles);
+    String setPrivileges(List<UserRoleEntity> roles);
 
 }

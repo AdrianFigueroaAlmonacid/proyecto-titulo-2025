@@ -129,7 +129,7 @@ public class UserServiceImpl implements IUserService {
         return userDao.save(user);
     }
 
-    //Metodo para actualizar un usuario por sys_admin
+    //Metodo para actualizar un usuario 
     @Transactional
     @Override
     public UserEntity updateUser(UserUpdateRequestDto userdto) {
@@ -137,15 +137,44 @@ public class UserServiceImpl implements IUserService {
         if(!existUsername(userdto.getUsername()) || findById(userdto.getId()) != null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no esta registrado" );
         }
+        UserEntity currentUser = findByUsername(getCurrentUsername());
+        UserEntity user = findById(userdto.getId());
 
-        UserEntity user = UserEntity.builder()
+        boolean stores = user.getStore().equals(currentUser.getStore());
+
+        String currentUserRole = setPrivileges(currentUser.getRoles());
+        String targetUserRole = setPrivileges(user.getRoles());
+
+        UserEntity userFinal = UserEntity.builder()
                          .idUser(userdto.getId())
                          .name(userdto.getName())
                          .lastName(userdto.getLastName())
                          .email(userdto.getEmail())
                          .username(userdto.getUsername())
                          .build();
-        return userDao.save(user);
+
+        if(targetUserRole.equals("ADMIN_SYSTEM")){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede modificar un administrador del sistema." );
+        }
+
+        if(currentUserRole.equals("ADMIN_SYSTEM")){
+            return userDao.save(userFinal);
+        }else if(targetUserRole.equals("ADMIN") && currentUserRole.equals("OWNER") ){
+            if(stores){
+                return userDao.save(userFinal);
+            }else{
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede modificar un usuario de otro negocio." );
+            }
+        }else if(targetUserRole.equals("USER") && !currentUserRole.equals("USER")){
+            if(stores){
+                return userDao.save(userFinal);
+            }else{
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede modificar un usuario de otro negocio." );
+            }
+        }else{
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede modificar con los privilegios actuales." );
+        }
+
     }
 
 
@@ -164,32 +193,35 @@ public class UserServiceImpl implements IUserService {
         UserEntity currentUser = findByUsername(getCurrentUsername());
         UserEntity user = findById(id);
         if (user==null || currentUser==null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no esta registrado para ser eliminado" );
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no esta registrado para ser eliminado." );
         }
-        String currentUserRole = setDeletePrivileges(currentUser.getRoles());
-        String targetUserRole = setDeletePrivileges(user.getRoles());
-        if(currentUserRole=="ADMIN_SYSTEM"){
-            userDao.delete(user);
+        String currentUserRole = setPrivileges(currentUser.getRoles());
+        String targetUserRole = setPrivileges(user.getRoles());
+
+        boolean stores = user.getStore().equals(currentUser.getStore());
+
+        if(targetUserRole.equals("ADMIN_SYSTEM")){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede eliminar un administrador del sistema." );
         }
 
-        if(setDeletePrivileges(user.getRoles())=="ADMIN_SYSTEM"){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede eliminar" );
-        }else if(targetUserRole=="ADMIN" && currentUserRole=="OWNER" ){
-            if(user.getStore()==currentUser.getStore()){
+        if(currentUserRole.equals("ADMIN_SYSTEM")){
+            userDao.delete(user);
+        }else if(targetUserRole.equals("ADMIN") && currentUserRole.equals("OWNER") ){
+            if(stores){
                 userDao.delete(user);
                 return;
             }else{
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede eliminar" );
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede eliminar un usuario de otro negocio." );
             }
-        }else if(targetUserRole=="USER"){
-            if(user.getStore()==currentUser.getStore()){
+        }else if(targetUserRole.equals("USER") && !currentUserRole.equals("USER")){
+            if(stores){
                 userDao.delete(user);
                 return;
             }else{
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede eliminar" );
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede eliminar un usuario desde otro usuario." );
             }
         }else{
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede eliminar" );
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede eliminar con los privilegios actuales." );
         }
     }
 
@@ -218,17 +250,6 @@ public class UserServiceImpl implements IUserService {
         return userDao.findAllByStore(user.getStore(), page);
     }
 
-    @Override
-    public String setPosition(List<UserRoleEntity> roles){
-        for(UserRoleEntity rol: roles){
-            if(rol.getRole() == "OWNER" || rol.getRole() == "ADMIN"){
-                return "ADMIN";
-            }else{
-                break;
-            }
-        }
-        return "Trabajador";
-    }
 
     //Metodo que devuelve el usuario actual de la peticion
     public String getCurrentUsername() {
@@ -241,14 +262,15 @@ public class UserServiceImpl implements IUserService {
     }
 
     //Metodo que devuelve el rol dominante 
-    public String setDeletePrivileges(List<UserRoleEntity> roles){
+    @Override
+    public String setPrivileges(List<UserRoleEntity> roles){
         List<String> roleNames = new ArrayList<>();
 
         for(UserRoleEntity rol: roles){
             roleNames.add(rol.getRole());
         }
         if(roleNames.contains("ADMIN_SYSTEM")){
-            return "ADMYN_SYSTEM";
+            return "ADMIN_SYSTEM";
         }else if(roleNames.contains("OWNER")){
             return "OWNER";
         }else if (roleNames.contains("ADMIN")){

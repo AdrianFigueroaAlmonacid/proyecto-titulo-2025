@@ -1,6 +1,7 @@
 package com.food_easy_back.backend_food_easy.model.entity;
 
 
+
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -34,18 +35,16 @@ public class ProductEntity {
     @Column(name="price")
     private double price;
 
+    @Column(name="price")
+    private double sell_price;
+
     @Column(name="quantity")
     private Integer quantity;
 
-    @Column(name="sale_price")
-    private double salePrice;
-
-    @Column(name="purchase_price")
-    private double purchasePrice;
-
     @Column(name= "expiration_date")
-    private LocalDateTime expirationDate;
-
+    private LocalDate expirationDate;
+    
     @ManyToOne
     private CategoryEntity category;
+
 }

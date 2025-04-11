@@ -1,5 +1,9 @@
 package com.food_easy_back.backend_food_easy.model.dto;
 
+
+import java.time.LocalDate;
+
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +15,11 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Builder
-public class StoreCreateRequestDto {
-    String name;
+public class ProductSaveRequestDto {
 
+    private String name;
+    private double price;
+    private Integer quantity;
+    private Long category;
+    private LocalDate expirationDate;
 }

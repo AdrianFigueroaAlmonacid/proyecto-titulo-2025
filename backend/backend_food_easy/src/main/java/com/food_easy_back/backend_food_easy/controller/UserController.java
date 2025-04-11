@@ -54,7 +54,7 @@ public class UserController {
                                 .lastName(user.getLastName())
                                 .email(user.getEmail())
                                 .username(user.getUsername())
-                                .role(userService.setPosition(user.getRoles()))
+                                .role(userService.setPrivileges(user.getRoles()))
                                 .build();
         ResponseMessage response = ResponseMessage.builder()
                                 .message("Usuario recuperado correctamente")
@@ -82,8 +82,8 @@ public class UserController {
         Page<UserListDto> dtoPage = usersPage.map(u -> UserListDto.builder()
                                         .IdUser(u.getIdUser())
                                         .name(u.getName())
-                                        .position(userService.setPosition(u.getRoles()))
-                                        .admin(userService.setPosition(u.getRoles())=="ADMIN"? true: false)
+                                        .position(userService.setPrivileges(u.getRoles()))
+                                        .admin(userService.setPrivileges(u.getRoles())=="ADMIN"? true: false)
                                         .build());
         ResponseMessage response = ResponseMessage.builder()
                                 .message("Usuarios recuperados correctamente")

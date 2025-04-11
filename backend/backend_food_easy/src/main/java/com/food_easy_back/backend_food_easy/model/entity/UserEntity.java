@@ -1,7 +1,7 @@
 package com.food_easy_back.backend_food_easy.model.entity;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -51,7 +51,7 @@ public class UserEntity  implements Serializable{
     private String lastName;
 
     @Column(name = "register_date", updatable = false)
-    private LocalDateTime registerDate;
+    private LocalDate registerDate;
 
     @Column(nullable = false, columnDefinition = "TINYINT")
     private Boolean locked;
@@ -70,6 +70,6 @@ public class UserEntity  implements Serializable{
 
     @PrePersist
     protected void onCreate() {
-        registerDate = LocalDateTime.now();
+        registerDate = LocalDate.now();
     }
 }
