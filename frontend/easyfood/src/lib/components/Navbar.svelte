@@ -30,7 +30,11 @@
 					<a class="nav-link" href="/users/manejarUsuarios">Manejo Usuarios</a>
 				</li>
 
-				<li><button type="button" class="btn btn-danger">Cerra Sesion</button></li>
+				<li>
+					<button type="button" class="btn btn-danger">
+						Cerrar sesión <i class="bi bi-box-arrow-in-left"></i>
+					</button>
+				</li>
 			</ul>
 		</div>
 	</div>

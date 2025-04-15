@@ -156,7 +156,9 @@
 		</div>
 		<div>
 			<!-- Botones -->
-			<button class="btn btn-success me-2" on:click={generarInforme}>Generar Informe</button>
+			<button class="btn btn-success me-2" on:click={generarInforme}>
+				<i class="bi bi-archive"></i> Generar Informe</button
+			>
 		</div>
 	</div>
 
@@ -183,10 +185,10 @@
 					<td>{formatearFecha(p.fechaVencimiento)}</td>
 					<td>
 						<button class="btn btn-sm btn-warning me-2" on:click={() => abrirModal(false, p)}
-							>Editar</button
+							><i class="bi bi-pencil-square"></i> Editar</button
 						>
 						<button class="btn btn-sm btn-danger" on:click={() => eliminarProducto(p.id)}
-							>Eliminar</button
+							><i class="bi bi-trash"></i> Eliminar</button
 						>
 					</td>
 				</tr>
@@ -200,7 +202,9 @@
 	</table>
 
 	<div class="d-flex justify-content-end">
-		<button class="btn btn-primary" on:click={() => abrirModal(true)}>Agregar Producto</button>
+		<button class="btn btn-primary" on:click={() => abrirModal(true)}
+			><i class="bi bi-plus-circle"></i> Agregar Producto</button
+		>
 	</div>
 </div>
 

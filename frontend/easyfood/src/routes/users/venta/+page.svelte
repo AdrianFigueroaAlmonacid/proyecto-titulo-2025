@@ -63,7 +63,9 @@
 								min="1"
 							/>
 						</div>
-						<button type="submit" class="btn btn-primary w-100">Registrar Venta</button>
+						<button type="submit" class="btn btn-primary w-100">
+							<i class="bi bi-bag-plus"></i> Registrar Venta</button
+						>
 					</form>
 
 					{#if mensaje}

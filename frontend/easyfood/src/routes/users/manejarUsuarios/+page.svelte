@@ -117,11 +117,11 @@
 						{/if}
 					</td>
 					<td>
-						<button class="btn btn-outline-primary btn-sm me-2" on:click={() => abrirModal(true, i)}
-							>Editar</button
+						<button class="btn btn-warning me-2" on:click={() => abrirModal(true, i)}>
+							<i class="bi bi-pencil-square"></i> Editar</button
 						>
-						<button class="btn btn-outline-danger btn-sm" on:click={() => eliminarUsuario(i)}
-							>Eliminar</button
+						<button class="btn btn-sm btn-danger" on:click={() => eliminarUsuario(i)}>
+							<i class="bi bi-trash"></i> Eliminar</button
 						>
 					</td>
 				</tr>
@@ -130,7 +130,9 @@
 	</table>
 	<!-- BOTÓN AGREGAR -->
 	<div class="d-flex justify-content-end align-items-center my-3">
-		<button class="btn btn-success" on:click={() => abrirModal()}>+ Agregar Usuario</button>
+		<button class="btn btn-success" on:click={() => abrirModal()}
+			><i class="bi bi-plus-circle"></i> Agregar Usuario</button
+		>
 	</div>
 </div>
 
