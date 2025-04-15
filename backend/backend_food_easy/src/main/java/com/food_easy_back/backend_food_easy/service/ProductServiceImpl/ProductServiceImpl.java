@@ -1,6 +1,10 @@
 package com.food_easy_back.backend_food_easy.service.ProductServiceImpl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +18,7 @@ import com.food_easy_back.backend_food_easy.model.dto.product.ProductSellDto;
 import com.food_easy_back.backend_food_easy.model.dto.product.ProductUpdateDto;
 import com.food_easy_back.backend_food_easy.model.entity.CategoryEntity;
 import com.food_easy_back.backend_food_easy.model.entity.ProductEntity;
+import com.food_easy_back.backend_food_easy.model.entity.StoreEntity;
 import com.food_easy_back.backend_food_easy.model.entity.UserEntity;
 import com.food_easy_back.backend_food_easy.service.ICategoryService;
 import com.food_easy_back.backend_food_easy.service.IProductService;
@@ -36,9 +41,6 @@ public class ProductServiceImpl implements IProductService {
         this.categoryService = categoryService;
         this.userDao = userDao;
     }
-
-
-    
 
     @Transactional
     @Override
@@ -119,5 +121,30 @@ public class ProductServiceImpl implements IProductService {
             return productDao.save(product);
         }
     }
+
+
+
+
+    @Override
+    public Page<ProductEntity> getProductsByCategory(String category,Pageable pageable) {
+        UserEntity user = userDao.findByUsername(getCurrentUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no esta registrado"));
+        StoreEntity store = user.getStore();
+        List<CategoryEntity> categories = store.getCategories();
+        CategoryEntity categoryFinal = null;
+        
+        for(CategoryEntity cat: categories){
+            if(cat.getName()== category){
+                categoryFinal = cat;
+                break;
+            }
+
+        }
+        if(categoryFinal==null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No existe la categoria en tu negocio" );
+        }
+
+        return productDao.findAllByCategory(categoryFinal, pageable);
+    }
+
 
 }

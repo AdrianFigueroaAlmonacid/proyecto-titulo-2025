@@ -40,7 +40,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(customizeRequests -> {
                 customizeRequests
                         .requestMatchers("/api/v1/auth").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/v1/user/owner").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/api/v1/user/admin").hasRole("ADMIN_SYSTEM")
                         .anyRequest()
                         .authenticated();
                 }

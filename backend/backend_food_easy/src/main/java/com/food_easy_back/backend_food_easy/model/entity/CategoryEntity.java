@@ -29,7 +29,7 @@ public class CategoryEntity {
     @Column(name = "category_id") 
     private Long idCategory;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     @ManyToOne

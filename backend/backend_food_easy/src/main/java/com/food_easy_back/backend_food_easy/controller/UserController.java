@@ -50,10 +50,12 @@ public class UserController {
        try {
         UserEntity user = userService.findByUsername(getCurrentUsername());
         UserDto userdto = UserDto.builder()
+                                .IdUser(user.getIdUser())
                                 .name(user.getName())
                                 .lastName(user.getLastName())
                                 .email(user.getEmail())
                                 .username(user.getUsername())
+                                .store(user.getStore().getName())
                                 .role(userService.setPrivileges(user.getRoles()))
                                 .build();
         ResponseMessage response = ResponseMessage.builder()
@@ -83,7 +85,7 @@ public class UserController {
                                         .IdUser(u.getIdUser())
                                         .name(u.getName())
                                         .position(userService.setPrivileges(u.getRoles()))
-                                        .admin(userService.setPrivileges(u.getRoles())=="ADMIN"? true: false)
+                                        .admin(userService.setPrivileges(u.getRoles())=="ADMIN" ||userService.setPrivileges(u.getRoles())=="OWNER" ? true: false)
                                         .build());
         ResponseMessage response = ResponseMessage.builder()
                                 .message("Usuarios recuperados correctamente")
@@ -194,7 +196,7 @@ public class UserController {
         
         } catch (Exception e) {
             ResponseMessage error = ResponseMessage.builder()
-                                    .message("Error al crear usuario: " + e.getMessage())
+                                    .message("Error al modificar usuario: " + e.getMessage())
                                     .object(null)
                                     .build();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
@@ -205,8 +207,28 @@ public class UserController {
     //AQUI ESTAN LOS DELETE
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Integer id){
-        userService.delete(id);
+    public ResponseEntity<?> deleteUser(@PathVariable Integer id){
+        try { 
+            userService.delete(id);     
+            ResponseMessage response = ResponseMessage.builder()
+                                        .message("Usuario eliminado con exito")
+                                        .object(null)
+                                        .build();
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }catch(ResponseStatusException e){
+            ResponseMessage error = ResponseMessage.builder()
+                                    .message(e.getReason())
+                                    .object(null)
+                                    .build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        
+        } catch (Exception e) {
+            ResponseMessage error = ResponseMessage.builder()
+                                    .message("Error al eliminar: " + e.getMessage())
+                                    .object(null)
+                                    .build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
     }
 
     public String getCurrentUsername() {

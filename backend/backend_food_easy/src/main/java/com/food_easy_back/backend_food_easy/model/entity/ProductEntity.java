@@ -35,7 +35,7 @@ public class ProductEntity {
     @Column(name="price")
     private double price;
 
-    @Column(name="price")
+    @Column(name="sell_price")
     private double sell_price;
 
     @Column(name="quantity")

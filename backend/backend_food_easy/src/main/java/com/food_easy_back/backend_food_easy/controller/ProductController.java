@@ -1,8 +1,12 @@
 package com.food_easy_back.backend_food_easy.controller;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.food_easy_back.backend_food_easy.model.dto.product.ProductListDto;
 import com.food_easy_back.backend_food_easy.model.dto.product.ProductSaveDto;
 import com.food_easy_back.backend_food_easy.model.dto.product.ProductSellDto;
 import com.food_easy_back.backend_food_easy.model.dto.product.ProductUpdateDto;
@@ -27,6 +32,36 @@ public class ProductController {
 
     public ProductController(IProductService productService) {
         this.productService = productService;
+    }
+
+
+    //Metodo get para obtener productos con su categoria
+    @GetMapping("/products/{category}")
+    public ResponseEntity<?> getProducts(@PathVariable String category,Pageable pageable){
+        try {
+
+            Page<ProductEntity> productsPage = productService.getProductsByCategory(category, pageable);
+            Page<ProductListDto> dtoPage = productsPage.map(u -> ProductListDto.builder()
+                                                                .category(u.getCategory().getName())
+                                                                .name(u.getName())
+                                                                .price(u.getPrice())
+                                                                .id(u.getIdProduct())
+                                                                .quantity(u.getQuantity())
+                                                                .expirationDate(u.getExpirationDate())
+                                                                .build());
+            ResponseMessage response = ResponseMessage.builder()
+                                .message("Productos recuperados correctamente")
+                                .object(dtoPage)
+                                .build();
+
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        } catch (Exception e) {
+            ResponseMessage error = ResponseMessage.builder()
+                                .message("Error al recuperar usuarios")
+                                .object(null)
+                                .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
     }
 
     

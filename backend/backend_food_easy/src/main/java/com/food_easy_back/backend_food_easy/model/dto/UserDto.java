@@ -22,7 +22,7 @@ public class UserDto implements Serializable{
     private String username;
     private String lastName;
     private String role;
-    private Integer store;
+    private String store;
 
 
 }

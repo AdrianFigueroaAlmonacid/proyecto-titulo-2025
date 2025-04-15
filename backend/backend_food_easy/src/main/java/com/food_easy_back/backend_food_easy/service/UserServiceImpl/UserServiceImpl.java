@@ -134,7 +134,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public UserEntity updateUser(UserUpdateDto userdto) {
 
-        if(!existUsername(userdto.getUsername()) || findById(userdto.getId()) != null){
+        if(!existUsername(userdto.getUsername()) || findById(userdto.getId()) == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no esta registrado" );
         }
         UserEntity currentUser = findByUsername(getCurrentUsername());
@@ -151,6 +151,10 @@ public class UserServiceImpl implements IUserService {
                          .lastName(userdto.getLastName())
                          .email(userdto.getEmail())
                          .username(userdto.getUsername())
+                         .password(user.getPassword())
+                         .store(user.getStore())
+                         .disabled(false)
+                         .locked(false)
                          .build();
 
         if(targetUserRole.equals("ADMIN_SYSTEM")){
@@ -198,11 +202,11 @@ public class UserServiceImpl implements IUserService {
         String currentUserRole = setPrivileges(currentUser.getRoles());
         String targetUserRole = setPrivileges(user.getRoles());
 
-        boolean stores = user.getStore().equals(currentUser.getStore());
 
         if(targetUserRole.equals("ADMIN_SYSTEM")){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede eliminar un administrador del sistema." );
         }
+        boolean stores = user.getStore().equals(currentUser.getStore());
 
         if(currentUserRole.equals("ADMIN_SYSTEM")){
             userDao.delete(user);
