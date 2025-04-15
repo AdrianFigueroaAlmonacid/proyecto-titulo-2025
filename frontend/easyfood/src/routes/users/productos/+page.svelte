@@ -199,7 +199,7 @@
 		</tbody>
 	</table>
 
-	<div d-flex justi>
+	<div class="d-flex justify-content-end">
 		<button class="btn btn-primary" on:click={() => abrirModal(true)}>Agregar Producto</button>
 	</div>
 </div>

@@ -26,6 +26,9 @@
 				<li class="nav-item">
 					<a class="nav-link" href="/users/venta">Venta</a>
 				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/users/manejarUsuarios">Manejo Usuarios</a>
+				</li>
 
 				<li><button type="button" class="btn btn-danger">Cerra Sesion</button></li>
 			</ul>

@@ -4,9 +4,7 @@
 	let password = '';
 
 	const handleLogin = () => {
-		console.log('Login:', { username, password });
-
-		goto('users/productos');
+		goto('users/inicio');
 	};
 </script>
 
