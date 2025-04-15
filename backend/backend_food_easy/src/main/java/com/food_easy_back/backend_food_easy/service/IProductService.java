@@ -20,5 +20,9 @@ public interface IProductService {
 
     Page<ProductEntity> getProductsByCategory(String category,Pageable pageable);
 
+    Integer showCountLowProducts();
+
+    Integer countExpiringSoon();
+
 
 }

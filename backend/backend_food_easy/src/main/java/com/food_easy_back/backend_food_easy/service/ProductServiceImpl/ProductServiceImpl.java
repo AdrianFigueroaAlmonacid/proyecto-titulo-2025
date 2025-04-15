@@ -1,5 +1,6 @@
 package com.food_easy_back.backend_food_easy.service.ProductServiceImpl;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,6 +145,23 @@ public class ProductServiceImpl implements IProductService {
         }
 
         return productDao.findAllByCategory(categoryFinal, pageable);
+    }
+
+    @Override
+    public Integer showCountLowProducts() {
+        UserEntity user = userDao.findByUsername(getCurrentUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no esta registrado"));
+        StoreEntity store = user.getStore();
+        Integer id = store.getIdStore();
+        return productDao.showCountLowProducts(id);
+    }
+
+    @Override
+    public Integer countExpiringSoon() {
+        UserEntity user = userDao.findByUsername(getCurrentUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no esta registrado"));
+        StoreEntity store = user.getStore();
+        Integer id = store.getIdStore();
+        LocalDate limit = LocalDate.now().plusDays(5);
+        return productDao.countExpiringSoon(limit, id);
     }
 
 

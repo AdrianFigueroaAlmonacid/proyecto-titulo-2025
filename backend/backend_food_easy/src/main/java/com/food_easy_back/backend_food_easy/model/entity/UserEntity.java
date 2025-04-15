@@ -27,7 +27,7 @@ import lombok.ToString;
 @ToString
 @Builder
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 public class UserEntity  implements Serializable{
 
     @Id

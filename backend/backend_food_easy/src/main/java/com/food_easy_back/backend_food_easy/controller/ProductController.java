@@ -36,7 +36,7 @@ public class ProductController {
 
 
     //Metodo get para obtener productos con su categoria
-    @GetMapping("/products/{category}")
+    @GetMapping("/{category}")
     public ResponseEntity<?> getProducts(@PathVariable String category,Pageable pageable){
         try {
 
@@ -52,6 +52,47 @@ public class ProductController {
             ResponseMessage response = ResponseMessage.builder()
                                 .message("Productos recuperados correctamente")
                                 .object(dtoPage)
+                                .build();
+
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        } catch (Exception e) {
+            ResponseMessage error = ResponseMessage.builder()
+                                .message("Error al recuperar usuarios")
+                                .object(null)
+                                .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
+    }
+
+    @GetMapping("/low-stock")
+    public ResponseEntity<?> getLowProducts(){
+        try {
+
+            
+            Integer low = productService.showCountLowProducts();
+            ResponseMessage response = ResponseMessage.builder()
+                                .message("Productos recuperados correctamente")
+                                .object(low)
+                                .build();
+
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        } catch (Exception e) {
+            ResponseMessage error = ResponseMessage.builder()
+                                .message("Error al recuperar usuarios")
+                                .object(null)
+                                .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
+    }
+    @GetMapping("/expiration-near")
+    public ResponseEntity<?> expiringSoonProducts(){
+        try {
+
+            
+            Integer near= productService.countExpiringSoon();
+            ResponseMessage response = ResponseMessage.builder()
+                                .message("Productos recuperados correctamente")
+                                .object(near)
                                 .build();
 
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
