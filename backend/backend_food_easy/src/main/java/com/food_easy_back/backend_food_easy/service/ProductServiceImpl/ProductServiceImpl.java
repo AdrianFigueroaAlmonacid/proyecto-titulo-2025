@@ -110,7 +110,7 @@ public class ProductServiceImpl implements IProductService {
 
 
 
-
+    @Transactional
     @Override
     public ProductEntity sellProduct(ProductSellDto productDto) {
         ProductEntity product = productDao.findById(productDto.getId()).orElseThrow(() -> new EntityNotFoundException("Producto no encontrado."));

@@ -19,17 +19,13 @@ public interface ProductDao extends CrudRepository <ProductEntity,Long> {
 
     Page<ProductEntity> findAllByCategory(CategoryEntity category, Pageable page);
 
-    @Query("SELECT COUNT(p) FROM product p " +
-       "INNER JOIN category c ON p.category_category_id = c.category_id " +
-       "INNER JOIN store s ON c.store_id_store = s.id_store " +
-       "WHERE p.quantity <= 5 AND s.id_store = :idStore")
+    @Query("SELECT COUNT(p) FROM ProductEntity p " +
+       "WHERE p.quantity <= 5 AND p.category.store.idStore= :idStore")
     Integer showCountLowProducts(@Param("idStore") Integer idStore);
 
-    @Query("SELECT COUNT(p) FROM product p " +
-       "INNER JOIN category c ON p.category_category_id = c.category_id " +
-       "INNER JOIN store s ON c.store_id_store = s.id_store " +
-        "WHERE p.expirationDate <= :limitDate AND s.id_store = :idStore")
-    Integer countExpiringSoon(@Param("limitDate") LocalDate limitDate,@Param("idStore") Integer idStore);
+    @Query("SELECT COUNT(p) FROM ProductEntity p " +
+        "WHERE p.expirationDate <= :limitDate AND p.category.store.idStore = :idStore")
+    Integer countExpiringSoon(@Param("limitDate") LocalDate limitDate, @Param("idStore") Integer idStore);
 
 
 }
