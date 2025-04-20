@@ -134,7 +134,7 @@ public class ProductServiceImpl implements IProductService {
         CategoryEntity categoryFinal = null;
         
         for(CategoryEntity cat: categories){
-            if(cat.getName()== category){
+            if(cat.getName().equals(category)){
                 categoryFinal = cat;
                 break;
             }
@@ -161,6 +161,8 @@ public class ProductServiceImpl implements IProductService {
         StoreEntity store = user.getStore();
         Integer id = store.getIdStore();
         LocalDate limit = LocalDate.now().plusDays(5);
+        System.out.println(LocalDate.now().plusDays(5));
+        System.out.println(limit);
         return productDao.countExpiringSoon(limit, id);
     }
 

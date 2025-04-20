@@ -31,19 +31,19 @@ public class ProductEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idProduct;
 
-    @Column(name= "name")
+    @Column(name= "name", nullable = false)
     private String name;
 
-    @Column(name="price")
+    @Column(name="price", nullable = false)
     private double price;
 
-    @Column(name="sell_price")
+    @Column(name="sell_price",nullable = false)
     private double sell_price;
 
-    @Column(name="quantity")
+    @Column(name="quantity",nullable = false)
     private Integer quantity;
 
-    @Column(name= "expiration_date")
+    @Column(name= "expiration_date",nullable = false)
     private LocalDate expirationDate;
     
     @ManyToOne

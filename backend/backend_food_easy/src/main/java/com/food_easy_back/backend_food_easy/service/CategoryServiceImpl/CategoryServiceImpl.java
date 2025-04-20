@@ -1,5 +1,7 @@
 package com.food_easy_back.backend_food_easy.service.CategoryServiceImpl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,12 +34,15 @@ public class CategoryServiceImpl implements ICategoryService {
 
 
 
+    //Metodo para encontrar una categoría por su id
     @Override
     public CategoryEntity findById(Long id) {
         return categoryDao.findById(id).orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada con id: " + id));
     }
 
 
+
+    //Metodo que guarda la categoria de acuerdo al negocio del usuario
     @Transactional
     @Override
     public CategoryEntity saveCategory(CategorySaveDto category) {
@@ -60,9 +65,20 @@ public class CategoryServiceImpl implements ICategoryService {
             return principal.toString();
         }
     }
+    //Metodo que devuelve el userEntoty con el username
     public UserEntity findByUsername(String username) {
          UserEntity user = userDao.findByUsername(username).orElseThrow(null);
         return user;
+    }
+
+
+
+
+    @Override
+    public List<CategoryEntity> getAllCategories() {
+        UserEntity user = findByUsername(getCurrentUsername());
+        StoreEntity store = user.getStore();
+        return categoryDao.findAllByStore(store);
     }
 
 }

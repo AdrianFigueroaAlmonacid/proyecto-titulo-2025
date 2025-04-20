@@ -30,7 +30,7 @@ public class StoreEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idStore;
 
-    @Column(name = "name")
+    @Column(name = "name",nullable = false)
     private String name;
 
 

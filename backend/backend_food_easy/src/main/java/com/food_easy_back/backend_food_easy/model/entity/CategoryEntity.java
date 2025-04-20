@@ -31,10 +31,10 @@ public class CategoryEntity {
     @Column(name = "category_id") 
     private Long idCategory;
 
-    @Column(name = "name", unique = true)
+    @Column(name = "name", unique = false, nullable = false)
     private String name;
 
-    @ManyToOne
+    @ManyToOne()
     private StoreEntity store;
     
     @OneToMany(mappedBy = "category",cascade = CascadeType.REMOVE)

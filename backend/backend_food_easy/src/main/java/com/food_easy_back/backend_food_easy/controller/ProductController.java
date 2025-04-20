@@ -56,8 +56,9 @@ public class ProductController {
 
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
         } catch (Exception e) {
+            e.printStackTrace();
             ResponseMessage error = ResponseMessage.builder()
-                                .message("Error al recuperar usuarios")
+                                .message("Error al recuperar productos")
                                 .object(null)
                                 .build();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
@@ -71,14 +72,15 @@ public class ProductController {
             
             Integer low = productService.showCountLowProducts();
             ResponseMessage response = ResponseMessage.builder()
-                                .message("Productos recuperados correctamente")
+                                .message("Productos con bajo stock recuperados correctamente")
                                 .object(low)
                                 .build();
 
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
         } catch (Exception e) {
+            e.printStackTrace();
             ResponseMessage error = ResponseMessage.builder()
-                                .message("Error al recuperar usuarios")
+                                .message("Error al recuperar productos con bajo stock")
                                 .object(null)
                                 .build();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
@@ -91,14 +93,15 @@ public class ProductController {
             
             Integer near= productService.countExpiringSoon();
             ResponseMessage response = ResponseMessage.builder()
-                                .message("Productos recuperados correctamente")
+                                .message("Productos con fecha proxima a expirar recuperados correctamente")
                                 .object(near)
                                 .build();
 
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
         } catch (Exception e) {
+            e.printStackTrace();
             ResponseMessage error = ResponseMessage.builder()
-                                .message("Error al recuperar usuarios")
+                                .message("Error al recuperar productos proximos a expirar")
                                 .object(null)
                                 .build();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
