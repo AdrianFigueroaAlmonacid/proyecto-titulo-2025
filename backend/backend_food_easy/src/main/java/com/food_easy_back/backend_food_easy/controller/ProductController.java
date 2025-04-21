@@ -197,8 +197,8 @@ public class ProductController {
 
     }
 
-    @DeleteMapping
-    public ResponseEntity <?>  deleteProduct (Long id){
+    @DeleteMapping("/{id}")
+    public ResponseEntity <?>  deleteProduct (@PathVariable Long id){
         try {
             productService.deleteProduct(id);
             ResponseMessage response = ResponseMessage.builder()
