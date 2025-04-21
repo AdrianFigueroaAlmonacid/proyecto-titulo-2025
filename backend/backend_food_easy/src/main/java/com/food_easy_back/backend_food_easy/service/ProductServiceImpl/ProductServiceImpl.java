@@ -14,6 +14,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.food_easy_back.backend_food_easy.model.dao.ProductDao;
 import com.food_easy_back.backend_food_easy.model.dao.UserDao;
+import com.food_easy_back.backend_food_easy.model.dto.product.ProductExpiringDto;
+import com.food_easy_back.backend_food_easy.model.dto.product.ProductLowDto;
 import com.food_easy_back.backend_food_easy.model.dto.product.ProductSaveDto;
 import com.food_easy_back.backend_food_easy.model.dto.product.ProductSellDto;
 import com.food_easy_back.backend_food_easy.model.dto.product.ProductUpdateDto;
@@ -164,6 +166,25 @@ public class ProductServiceImpl implements IProductService {
         System.out.println(LocalDate.now().plusDays(5));
         System.out.println(limit);
         return productDao.countExpiringSoon(limit, id);
+    }
+
+    @Override
+    public List<ProductLowDto> showLowProducts() {
+        UserEntity user = userDao.findByUsername(getCurrentUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no esta registrado"));
+        StoreEntity store = user.getStore();
+        Integer id = store.getIdStore();
+        return productDao.showLowProducts(id);
+    }
+
+    @Override
+    public List<ProductExpiringDto> showExpiringProducts() {
+        UserEntity user = userDao.findByUsername(getCurrentUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no esta registrado"));
+        StoreEntity store = user.getStore();
+        Integer id = store.getIdStore();
+        LocalDate limit = LocalDate.now().plusDays(5);
+        System.out.println(LocalDate.now().plusDays(5));
+        System.out.println(limit);
+        return productDao.ExpiringSoon(limit, id);
     }
 
 

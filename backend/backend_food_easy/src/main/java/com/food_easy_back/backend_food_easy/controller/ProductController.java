@@ -1,5 +1,7 @@
 package com.food_easy_back.backend_food_easy.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -14,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.food_easy_back.backend_food_easy.model.dto.product.ProductExpiringDto;
 import com.food_easy_back.backend_food_easy.model.dto.product.ProductListDto;
+import com.food_easy_back.backend_food_easy.model.dto.product.ProductLowDto;
 import com.food_easy_back.backend_food_easy.model.dto.product.ProductSaveDto;
 import com.food_easy_back.backend_food_easy.model.dto.product.ProductSellDto;
 import com.food_easy_back.backend_food_easy.model.dto.product.ProductUpdateDto;
@@ -64,13 +68,12 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
     }
-
     @GetMapping("/low-stock")
     public ResponseEntity<?> getLowProducts(){
         try {
 
             
-            Integer low = productService.showCountLowProducts();
+            List<ProductLowDto> low = productService.showLowProducts();
             ResponseMessage response = ResponseMessage.builder()
                                 .message("Productos con bajo stock recuperados correctamente")
                                 .object(low)
@@ -86,14 +89,57 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
     }
-    @GetMapping("/expiration-near")
+    @GetMapping("/expiring-soon")
     public ResponseEntity<?> expiringSoonProducts(){
+        try {
+
+            
+            List<ProductExpiringDto> near= productService.showExpiringProducts();
+            ResponseMessage response = ResponseMessage.builder()
+                                .message("Cantidad de productos con fecha proxima a expirar recuperados correctamente")
+                                .object(near)
+                                .build();
+
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ResponseMessage error = ResponseMessage.builder()
+                                .message("Error al recuperar productos proximos a expirar")
+                                .object(null)
+                                .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
+    }
+
+    @GetMapping("/low-stock/count")
+    public ResponseEntity<?> getLowProductsCount(){
+        try {
+
+            
+            Integer low = productService.showCountLowProducts();
+            ResponseMessage response = ResponseMessage.builder()
+                                .message("Cantidad de productos con bajo stock recuperados correctamente")
+                                .object(low)
+                                .build();
+
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ResponseMessage error = ResponseMessage.builder()
+                                .message("Error al recuperar productos con bajo stock")
+                                .object(null)
+                                .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
+    }
+    @GetMapping("/expiring-soon/count")
+    public ResponseEntity<?> expiringSoonProductsCount(){
         try {
 
             
             Integer near= productService.countExpiringSoon();
             ResponseMessage response = ResponseMessage.builder()
-                                .message("Productos con fecha proxima a expirar recuperados correctamente")
+                                .message("Cantidad de productos con fecha proxima a expirar recuperados correctamente")
                                 .object(near)
                                 .build();
 
