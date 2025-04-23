@@ -3,17 +3,18 @@
 	import { fade } from 'svelte/transition';
 	// Simulación de datos de inventario
 	let inventario = [
-		{ id: 1, nombre: 'Producto A', cantidad: 100, fechaVencimiento: '2025-05-10' },
-		{ id: 2, nombre: 'Producto B', cantidad: 5, fechaVencimiento: '2025-04-15' },
-		{ id: 3, nombre: 'Producto C', cantidad: 200, fechaVencimiento: '2025-06-01' },
-		{ id: 4, nombre: 'Producto D', cantidad: 3, fechaVencimiento: '2025-04-10' },
-		{ id: 5, nombre: 'Producto E', cantidad: 50, fechaVencimiento: '2025-05-20' }
+		{ id: 1, nombre: 'Mantequilla', cantidad: 100, fechaVencimiento: '2025-05-10' },
+		{ id: 2, nombre: 'Leche blanca', cantidad: 5, fechaVencimiento: '2025-04-15' },
+		{ id: 3, nombre: 'Carne molida', cantidad: 200, fechaVencimiento: '2025-06-01' },
+		{ id: 4, nombre: 'Pollo congelado', cantidad: 3, fechaVencimiento: '2025-04-10' },
+		{ id: 5, nombre: 'Croquetas', cantidad: 5, fechaVencimiento: '2025-05-20' }
 	];
 
 	let productosPorVencer = [];
 	let productosStockBajo = [];
 	let mensaje = '';
 	let fechaHoy = '';
+	let nameUserAuth = 'usuario';
 
 	// Filtrar productos por fecha de vencimiento
 	const obtenerProductosPorVencer = () => {
@@ -58,13 +59,13 @@
 	});
 </script>
 
-<div class="container mt-5">
+<div class="container mt-5 d-flex justify-content-center align-items-center row m-auto">
 	<div>
-		<h1>{mensaje}</h1>
-		<p><strong>Fecha:</strong> {fechaHoy}</p>
+		<h1>{mensaje} {nameUserAuth}</h1>
+		<h2>Este es el resumen de hoy <strong>{fechaHoy}</strong></h2>
 	</div>
 
-	<div class="row text-center">
+	<div class="row text-center mt-5">
 		<!-- Resumen de productos por vencer -->
 		<div class="col-md-6">
 			<h3>Productos por Vencer</h3>
@@ -72,8 +73,9 @@
 				<div class="alert alert-danger" role="alert">
 					<ul class="list-group">
 						{#each productosPorVencer as producto}
-							<li class="list-group-item">
-								<strong>{producto.nombre}</strong> - Vence el: {producto.fechaVencimiento}
+							<li class="list-group-item text-start">
+								<strong>{producto.nombre}</strong> - Vence el:
+								<strong>{producto.fechaVencimiento}</strong>
 							</li>
 						{/each}
 					</ul>
@@ -87,13 +89,15 @@
 		<div class="col-md-6">
 			<h3>Productos con Stock Bajo</h3>
 			{#if productosStockBajo.length > 0}
-				<ul class="list-group">
-					{#each productosStockBajo as producto}
-						<li class="list-group-item">
-							<strong>{producto.nombre}</strong> - Stock: {producto.cantidad} unidades
-						</li>
-					{/each}
-				</ul>
+				<div class="alert alert-warning">
+					<ul class="list-group">
+						{#each productosStockBajo as producto}
+							<li class="list-group-item text-start">
+								<strong>{producto.nombre}</strong> - Stock: <strong>{producto.cantidad}</strong> unidades
+							</li>
+						{/each}
+					</ul>
+				</div>
 			{:else}
 				<p>No hay productos con stock bajo.</p>
 			{/if}
@@ -103,7 +107,7 @@
 
 <style>
 	.container {
-		max-width: 900px;
+		max-width: 1000px;
 	}
 
 	h1 {
@@ -111,7 +115,7 @@
 	}
 
 	.list-group-item {
-		font-size: 1.1rem;
+		font-size: 1.2rem;
 	}
 
 	.list-group-item strong {
