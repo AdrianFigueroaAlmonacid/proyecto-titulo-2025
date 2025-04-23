@@ -94,43 +94,48 @@
 <div style="max-width: 1200px; margin:auto;" class="p-5 d-grid gap-4">
 	<div class="text-center"><h1>Administracion de Usuarios</h1></div>
 
-	<table class="table table-bordered table-hover text-center">
-		<thead class="table-light">
-			<tr>
-				<th>Fecha</th>
-				<th>Nombre</th>
-				<th>Rol</th>
-				<th>Admin</th>
-				<th>Acciones</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each usuarios as usuario, i}
+	<div class="table-responsive">
+		<table class="table table-bordered table-hover text-center">
+			<thead class="table-light">
 				<tr>
-					<td>{usuario.fecha}</td>
-					<td>{usuario.nombre}</td>
-					<td>{usuario.rol}</td>
-					<td>
-						{#if usuario.admin}
-							<span class="badge bg-success">Sí</span>
-						{:else}
-							<span class="badge bg-secondary">No</span>
-						{/if}
-					</td>
-					<td>
-						<button class="btn btn-warning me-2" on:click={() => abrirModal(true, i)}>
-							<i class="bi bi-pencil-square"></i> Editar</button
-						>
-						<button class="btn btn-sm btn-danger" on:click={() => eliminarUsuario(i)}>
-							<i class="bi bi-trash"></i> Eliminar</button
-						>
-					</td>
+					<th>Fecha</th>
+					<th>Nombre</th>
+					<th>Rol</th>
+					<th>Admin</th>
+					<th>Acciones</th>
 				</tr>
-			{/each}
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				{#each usuarios as usuario, i}
+					<tr>
+						<td>{usuario.fecha}</td>
+						<td>{usuario.nombre}</td>
+						<td>{usuario.rol}</td>
+						<td>
+							{#if usuario.admin}
+								<span class="badge bg-success">Sí</span>
+							{:else}
+								<span class="badge bg-secondary">No</span>
+							{/if}
+						</td>
+						<td>
+							<div class="d-flex justify-content-center g-5">
+								<button class="btn btn-warning me-2" on:click={() => abrirModal(true, i)}>
+									<i class="bi bi-pencil-square"></i> Editar</button
+								>
+								<button class="btn btn-sm btn-danger" on:click={() => eliminarUsuario(i)}>
+									<i class="bi bi-trash"></i> Eliminar</button
+								>
+							</div>
+						</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+
 	<!-- BOTÓN AGREGAR -->
-	<div class="d-flex justify-content-end align-items-center my-3">
+	<div class="d-flex justify-content-end align-items-center">
 		<button class="btn btn-success" on:click={() => abrirModal()}
 			><i class="bi bi-plus-circle"></i> Agregar Usuario</button
 		>

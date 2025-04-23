@@ -8,7 +8,6 @@
 		{
 			id: 1,
 			nombre: 'Pan',
-			precioCompra: 500,
 			precioVenta: 1000,
 			stock: 20,
 			fechaVencimiento: '2025-06-01',
@@ -17,7 +16,6 @@
 		{
 			id: 2,
 			nombre: 'Leche',
-			precioCompra: 700,
 			precioVenta: 1200,
 			stock: 15,
 			fechaVencimiento: '2025-04-30',
@@ -26,7 +24,6 @@
 		{
 			id: 3,
 			nombre: 'Yogurt',
-			precioCompra: 300,
 			precioVenta: 700,
 			stock: 30,
 			fechaVencimiento: '2025-05-20',
@@ -35,7 +32,6 @@
 		{
 			id: 4,
 			nombre: 'Arroz',
-			precioCompra: 400,
 			precioVenta: 800,
 			stock: 50,
 			fechaVencimiento: '2026-06-01',
@@ -50,7 +46,6 @@
 	let producto = {
 		id: null,
 		nombre: '',
-		precioCompra: '',
 		precioVenta: '',
 		stock: '',
 		fechaVencimiento: '',
@@ -74,7 +69,6 @@
 			: {
 					id: null,
 					nombre: '',
-					precioCompra: '',
 					precioVenta: '',
 					stock: '',
 					fechaVencimiento: '',
@@ -120,7 +114,6 @@
 			doc.text(`Nombre: ${p.nombre}`, 20, 40 + index * 10);
 			doc.text(`Stock: ${p.stock}`, 20, 45 + index * 10);
 			doc.text(`Fecha de Vencimiento: ${formatearFecha(p.fechaVencimiento)}`, 20, 50 + index * 10);
-			doc.text(`Precio de Compra: $${p.precioCompra}`, 20, 55 + index * 10);
 			doc.text(`Precio de Venta: $${p.precioVenta}`, 20, 60 + index * 10);
 			doc.text('\n', 20, 65 + index * 10); // Espacio entre productos
 		});
@@ -163,50 +156,51 @@
 			>
 		</div>
 	</div>
-
-	<table class="table table-bordered table-hover">
-		<thead class="table-light">
-			<tr>
-				<th>Categoría</th>
-				<th>Nombre</th>
-				<th>Precio Compra</th>
-				<th>Precio Venta</th>
-				<th>Stock</th>
-				<th>Fecha Vencimiento</th>
-				<th>Acciones</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each productosFiltrados as p}
+	<div class="table-responsive">
+		<table class="table table-bordered table-hover">
+			<thead class="table-light">
 				<tr>
-					<td>{p.categoria}</td>
-					<td>{p.nombre}</td>
-					<td>${p.precioCompra}</td>
-					<td>${p.precioVenta}</td>
-					<td>{p.stock}</td>
-					<td>{formatearFecha(p.fechaVencimiento)}</td>
-					<td>
-						<button class="btn btn-sm btn-warning me-2" on:click={() => abrirModal(false, p)}
-							><i class="bi bi-pencil-square"></i> Editar</button
-						>
-						<button class="btn btn-sm btn-danger" on:click={() => eliminarProducto(p.id)}
-							><i class="bi bi-trash"></i> Eliminar</button
-						>
-					</td>
+					<th>Categoría</th>
+					<th>Nombre</th>
+					<th>Precio Venta</th>
+					<th>Stock</th>
+					<th>Fecha Vencimiento</th>
+					<th>Acciones</th>
 				</tr>
-			{/each}
-			{#if productos.length === 0}
-				<tr>
-					<td colspan="7" class="text-center">No hay productos</td>
-				</tr>
-			{/if}
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				{#each productosFiltrados as p}
+					<tr>
+						<td>{p.categoria}</td>
+						<td>{p.nombre}</td>
+						<td>${p.precioVenta}</td>
+						<td>{p.stock}</td>
+						<td>{formatearFecha(p.fechaVencimiento)}</td>
+						<td>
+							<div class="d-flex justify-content-center g-5">
+								<button class="btn btn-sm btn-warning me-2" on:click={() => abrirModal(false, p)}
+									><i class="bi bi-pencil-square"></i> Editar</button
+								>
+								<button class="btn btn-sm btn-danger" on:click={() => eliminarProducto(p.id)}
+									><i class="bi bi-trash"></i> Eliminar</button
+								>
+							</div>
+						</td>
+					</tr>
+				{/each}
+				{#if productos.length === 0}
+					<tr>
+						<td colspan="7" class="text-center">No hay productos</td>
+					</tr>
+				{/if}
+			</tbody>
+		</table>
 
-	<div class="d-flex justify-content-end">
-		<button class="btn btn-primary" on:click={() => abrirModal(true)}
-			><i class="bi bi-plus-circle"></i> Agregar Producto</button
-		>
+		<div class="d-flex justify-content-end">
+			<button class="btn btn-primary" on:click={() => abrirModal(true)}
+				><i class="bi bi-plus-circle"></i> Agregar Producto</button
+			>
+		</div>
 	</div>
 </div>
 
@@ -232,10 +226,6 @@
 					<div class="mb-3">
 						<label class="form-label">Nombre</label>
 						<input class="form-control" type="text" bind:value={producto.nombre} required />
-					</div>
-					<div class="mb-3">
-						<label class="form-label">Precio Compra</label>
-						<input class="form-control" type="number" bind:value={producto.precioCompra} required />
 					</div>
 					<div class="mb-3">
 						<label class="form-label">Precio Venta</label>
