@@ -1,4 +1,6 @@
 <script>
+	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
 	// Simulación del inventario
 	let inventario = [
 		{ id: 1, nombre: 'Producto A', cantidad: 100 },
@@ -34,49 +36,52 @@
 	};
 </script>
 
-<div class="container mt-5">
-	<h1 class="text-center">Venta de Productos</h1>
+<!-- Contenedor que centra horizontalmente y deja espacio arriba -->
+<div class="d-flex justify-content-center mt-5">
+	<div class="container mt-5">
+		<h1 class="text-center">Venta de Productos</h1>
 
-	<div class="row justify-content-center">
-		<div class="col-md-8">
-			<div class="card">
-				<div class="card-body">
-					<form on:submit|preventDefault={manejarVenta}>
-						<div class="mb-3">
-							<label for="producto" class="form-label">Nombre del Producto</label>
-							<input
-								type="text"
-								id="producto"
-								class="form-control"
-								bind:value={productoNombre}
-								required
-							/>
-						</div>
-						<div class="mb-3">
-							<label for="cantidad" class="form-label">Cantidad a Vender</label>
-							<input
-								type="number"
-								id="cantidad"
-								class="form-control"
-								bind:value={cantidadVenta}
-								required
-								min="1"
-							/>
-						</div>
-						<button type="submit" class="btn btn-primary w-100">
-							<i class="bi bi-bag-plus"></i> Registrar Venta</button
-						>
-					</form>
+		<div class="row justify-content-center">
+			<div class="col-md-8">
+				<div class="card">
+					<div class="card-body">
+						<form on:submit|preventDefault={manejarVenta}>
+							<div class="mb-3">
+								<label for="producto" class="form-label">Nombre del Producto</label>
+								<input
+									type="text"
+									id="producto"
+									class="form-control"
+									bind:value={productoNombre}
+									required
+								/>
+							</div>
+							<div class="mb-3">
+								<label for="cantidad" class="form-label">Cantidad a Vender</label>
+								<input
+									type="number"
+									id="cantidad"
+									class="form-control"
+									bind:value={cantidadVenta}
+									required
+									min="1"
+								/>
+							</div>
+							<button type="submit" class="btn btn-primary w-100">
+								<i class="bi bi-bag-plus"></i> Registrar Venta
+							</button>
+						</form>
 
-					{#if mensaje}
-						<div
-							class="alert mt-3"
-							class:alert-success={mensaje.includes('exitosa')}
-							class:alert-danger={mensaje.includes('No hay')}
-						>
-							{mensaje}
-						</div>
-					{/if}
+						{#if mensaje}
+							<div
+								class="alert mt-3"
+								class:alert-success={mensaje.includes('exitosa')}
+								class:alert-danger={mensaje.includes('No hay')}
+							>
+								{mensaje}
+							</div>
+						{/if}
+					</div>
 				</div>
 			</div>
 		</div>
@@ -85,10 +90,10 @@
 
 <style>
 	.container {
-		max-width: 600px;
+		max-width: 700px;
 	}
 
 	.alert {
-		font-size: 1.2rem;
+		font-size: 1.5rem;
 	}
 </style>

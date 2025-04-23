@@ -1,7 +1,4 @@
-<script>
-</script>
-
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
+<nav class="navbar navbar-expand-lg">
 	<div class="container-fluid">
 		<a class="navbar-brand" href="/users/inicio">Easy Food</a>
 		<button
@@ -41,19 +38,17 @@
 </nav>
 
 <style>
-	/* .navbar {
-		background-color: #f8f9fa;
-	} */
+	.navbar {
+		background-color: #007bff !important; /* Cambia esto por el color que desees */
+	}
 
 	.navbar-brand {
 		font-weight: bold;
+		color: white !important;
 	}
-
-	/* .nav-link.active {
-		color: #0d6efd;
-	} */
 
 	.nav-link {
 		font-size: 1.2rem;
+		color: white !important;
 	}
 </style>

@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
 
 	let usuarios = [
 		{ fecha: '2025-01-01', nombre: 'Juan', admin: true, rol: 'Administrador' },
@@ -93,7 +94,7 @@
 <div style="max-width: 1200px; margin:auto;" class="p-5 d-grid gap-4">
 	<div class="text-center"><h1>Administracion de Usuarios</h1></div>
 
-	<table class="table table-bordered table-hover">
+	<table class="table table-bordered table-hover text-center">
 		<thead class="table-light">
 			<tr>
 				<th>Fecha</th>

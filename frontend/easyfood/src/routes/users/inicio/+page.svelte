@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-
+	import { fade } from 'svelte/transition';
 	// Simulación de datos de inventario
 	let inventario = [
 		{ id: 1, nombre: 'Producto A', cantidad: 100, fechaVencimiento: '2025-05-10' },
@@ -59,10 +59,12 @@
 </script>
 
 <div class="container mt-5">
-	<h1>{mensaje}</h1>
-	<p><strong>Fecha de hoy:</strong> {fechaHoy}</p>
+	<div>
+		<h1>{mensaje}</h1>
+		<p><strong>Fecha:</strong> {fechaHoy}</p>
+	</div>
 
-	<div class="row">
+	<div class="row text-center">
 		<!-- Resumen de productos por vencer -->
 		<div class="col-md-6">
 			<h3>Productos por Vencer</h3>

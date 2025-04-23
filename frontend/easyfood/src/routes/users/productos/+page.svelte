@@ -141,8 +141,10 @@
 <!-- Tabla -->
 <div
 	class="container row d-flex justify-content-center text-center"
-	style="max-width: 1200px; margin:auto;"
+	style="max-width: 1200px; margin:50px auto;"
 >
+	<div class="text-center"><h1>Administracion de Productos</h1></div>
+
 	<div class="d-flex justify-content-between align-items-center mb-3">
 		<div>
 			<!-- Selector de categoría -->
@@ -256,9 +258,11 @@
 						<label class="form-label">Categoría</label>
 						<input class="form-control" type="text" bind:value={producto.categoria} required />
 					</div>
-					<button type="submit" class="btn btn-success">
-						{isEdit ? 'Guardar Cambios' : 'Agregar Producto'}
-					</button>
+					<div class="d-flex justify-content-end">
+						<button type="submit" class="btn btn-success">
+							{isEdit ? 'Guardar Cambios' : 'Agregar Producto'}
+						</button>
+					</div>
 				</form>
 			</div>
 		</div>
