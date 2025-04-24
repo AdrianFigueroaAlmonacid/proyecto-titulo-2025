@@ -32,5 +32,7 @@ public interface IProductService {
 
     List<ProductExpiringDto> showExpiringProducts();
 
+    List<ProductExpiringDto> showExpiredProducts();
+
 
 }

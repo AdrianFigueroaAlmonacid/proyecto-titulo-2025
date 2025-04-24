@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,6 +21,7 @@ import com.food_easy_back.backend_food_easy.model.dao.UserDao;
 import com.food_easy_back.backend_food_easy.model.dto.OwnerCreateDto;
 import com.food_easy_back.backend_food_easy.model.dto.StoreCreateDto;
 import com.food_easy_back.backend_food_easy.model.dto.UserCreateDto;
+import com.food_easy_back.backend_food_easy.model.dto.UserPasswordDto;
 import com.food_easy_back.backend_food_easy.model.dto.UserUpdateDto;
 import com.food_easy_back.backend_food_easy.model.entity.StoreEntity;
 import com.food_easy_back.backend_food_easy.model.entity.UserEntity;
@@ -181,6 +183,56 @@ public class UserServiceImpl implements IUserService {
 
     }
 
+    @Override
+    public UserEntity updateUserPassword(UserPasswordDto userdto) {
+        if(!existUsername(userdto.getUsername()) || findById(userdto.getId()) == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no esta registrado" );
+        }
+        UserEntity currentUser = findByUsername(getCurrentUsername());
+        UserEntity user = findById(userdto.getId());
+
+        boolean stores = user.getStore().equals(currentUser.getStore());
+
+        String currentUserRole = setPrivileges(currentUser.getRoles());
+        String targetUserRole = setPrivileges(user.getRoles());
+
+        user.setPassword(passwordEncoder.encode(userdto.getPassword()));
+
+        UserEntity userFinal = UserEntity.builder()
+                         .idUser(userdto.getId())
+                         .name(user.getName())
+                         .lastName(user.getLastName())
+                         .email(user.getEmail())
+                         .username(userdto.getUsername())
+                         .password(user.getPassword())
+                         .store(user.getStore())
+                         .disabled(false)
+                         .locked(false)
+                         .build();
+
+        if(targetUserRole.equals("ADMIN_SYSTEM")){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede modificar un administrador del sistema." );
+        }
+
+        if(currentUserRole.equals("ADMIN_SYSTEM")){
+            return userDao.save(userFinal);
+        }else if(targetUserRole.equals("ADMIN") && currentUserRole.equals("OWNER") ){
+            if(stores){
+                return userDao.save(userFinal);
+            }else{
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede modificar un usuario de otro negocio." );
+            }
+        }else if(targetUserRole.equals("USER") && !currentUserRole.equals("USER")){
+            if(stores){
+                return userDao.save(userFinal);
+            }else{
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede modificar un usuario de otro negocio." );
+            }
+        }else{
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede modificar con los privilegios actuales." );
+        }
+    }
+
 
     //Metodo para encontrar un usuario por id
     @Transactional
@@ -243,7 +295,7 @@ public class UserServiceImpl implements IUserService {
     //Metodo para encontrar un usuario por su username
     @Override
     public UserEntity findByUsername(String username) {
-         UserEntity user = userDao.findByUsername(username).orElseThrow(null);
+         UserEntity user = userDao.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
         return user;
     }
 
@@ -251,6 +303,9 @@ public class UserServiceImpl implements IUserService {
     @Override
     public Page<UserEntity> getUsersByStore( Pageable page) {
         UserEntity user = findByUsername(getCurrentUsername());
+        if (user==null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado" );
+        }
         return userDao.findAllByStore(user.getStore(), page);
     }
 
@@ -282,6 +337,7 @@ public class UserServiceImpl implements IUserService {
         }
         return "USER";
     }
+
 
 
 }

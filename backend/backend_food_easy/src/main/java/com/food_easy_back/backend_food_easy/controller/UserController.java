@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +24,7 @@ import com.food_easy_back.backend_food_easy.model.dto.OwnerCreateDto;
 import com.food_easy_back.backend_food_easy.model.dto.UserCreateDto;
 import com.food_easy_back.backend_food_easy.model.dto.UserDto;
 import com.food_easy_back.backend_food_easy.model.dto.UserListDto;
+import com.food_easy_back.backend_food_easy.model.dto.UserPasswordDto;
 import com.food_easy_back.backend_food_easy.model.dto.UserUpdateDto;
 import com.food_easy_back.backend_food_easy.model.entity.UserEntity;
 import com.food_easy_back.backend_food_easy.model.payload.ResponseMessage;
@@ -63,14 +65,20 @@ public class UserController {
                                 .object(userdto)
                                 .build();
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (UsernameNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ResponseMessage.builder()
+                    .message(e.getMessage())
+                    .object(null)
+                    .build());
         
        } catch (Exception e) {
         ResponseMessage error = ResponseMessage.builder()
                                 .message("Error al recuperar usuario")
                                 .object(null)
                                 .build();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
 
        }
     }
@@ -92,14 +100,21 @@ public class UserController {
                                 .object(dtoPage)
                                 .build();
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+        
+        }catch(ResponseStatusException e){
+            ResponseMessage error = ResponseMessage.builder()
+                                    .message(e.getReason())
+                                    .object(null)
+                                    .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         
        } catch (Exception e) {
         ResponseMessage error = ResponseMessage.builder()
                                 .message("Error al recuperar usuarios")
                                 .object(null)
                                 .build();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
 
        }
     }
@@ -179,6 +194,36 @@ public class UserController {
 
         try {      
             UserEntity user = userService.updateUser(userDto);
+            UserDto userdto = UserDto.builder()
+                                .username(user.getUsername())
+                                .build();
+            ResponseMessage response = ResponseMessage.builder()
+                                        .message("Usuario modificado con exito")
+                                        .object(userdto)
+                                        .build();
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }catch(ResponseStatusException e){
+            ResponseMessage error = ResponseMessage.builder()
+                                    .message(e.getReason())
+                                    .object(null)
+                                    .build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        
+        } catch (Exception e) {
+            ResponseMessage error = ResponseMessage.builder()
+                                    .message("Error al modificar usuario: " + e.getMessage())
+                                    .object(null)
+                                    .build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+
+    }
+
+    @PutMapping
+    public ResponseEntity<?> modifyUserPassword(@RequestBody UserPasswordDto userDto){
+
+        try {      
+            UserEntity user = userService.updateUserPassword(userDto);
             UserDto userdto = UserDto.builder()
                                 .username(user.getUsername())
                                 .build();

@@ -1,7 +1,9 @@
 package com.food_easy_back.backend_food_easy.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -22,9 +24,12 @@ import com.food_easy_back.backend_food_easy.model.dto.product.ProductLowDto;
 import com.food_easy_back.backend_food_easy.model.dto.product.ProductSaveDto;
 import com.food_easy_back.backend_food_easy.model.dto.product.ProductSellDto;
 import com.food_easy_back.backend_food_easy.model.dto.product.ProductUpdateDto;
+import com.food_easy_back.backend_food_easy.model.dto.product.SaleListDto;
 import com.food_easy_back.backend_food_easy.model.entity.ProductEntity;
+import com.food_easy_back.backend_food_easy.model.entity.SaleEntity;
 import com.food_easy_back.backend_food_easy.model.payload.ResponseMessage;
 import com.food_easy_back.backend_food_easy.service.IProductService;
+import com.food_easy_back.backend_food_easy.service.ISaleService;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -33,12 +38,15 @@ import jakarta.persistence.EntityNotFoundException;
 public class ProductController {
 
     private final IProductService productService;
+    private final ISaleService saleService;
 
-    public ProductController(IProductService productService) {
+    
+
+    @Autowired
+    public ProductController(IProductService productService, ISaleService saleService) {
         this.productService = productService;
+        this.saleService = saleService;
     }
-
-
     //Metodo get para obtener productos con su categoria
     @GetMapping("/{category}")
     public ResponseEntity<?> getProducts(@PathVariable String category,Pageable pageable){
@@ -59,15 +67,23 @@ public class ProductController {
                                 .build();
 
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        }catch(ResponseStatusException e){
+            ResponseMessage error = ResponseMessage.builder()
+                                    .message(e.getReason())
+                                    .object(null)
+                                    .build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         } catch (Exception e) {
             e.printStackTrace();
             ResponseMessage error = ResponseMessage.builder()
                                 .message("Error al recuperar productos")
                                 .object(null)
                                 .build();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
+
+    //Endpoint para obtener la lista de productos con bajo stock
     @GetMapping("/low-stock")
     public ResponseEntity<?> getLowProducts(){
         try {
@@ -79,16 +95,23 @@ public class ProductController {
                                 .object(low)
                                 .build();
 
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }catch(ResponseStatusException e){
+            ResponseMessage error = ResponseMessage.builder()
+                                    .message(e.getReason())
+                                    .object(null)
+                                    .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         } catch (Exception e) {
-            e.printStackTrace();
             ResponseMessage error = ResponseMessage.builder()
                                 .message("Error al recuperar productos con bajo stock")
                                 .object(null)
                                 .build();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
+
+    //Endpoint para obtener la lista de productos a punto de vencer
     @GetMapping("/expiring-soon")
     public ResponseEntity<?> expiringSoonProducts(){
         try {
@@ -100,17 +123,23 @@ public class ProductController {
                                 .object(near)
                                 .build();
 
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }catch(ResponseStatusException e){
+            ResponseMessage error = ResponseMessage.builder()
+                                    .message(e.getReason())
+                                    .object(null)
+                                    .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         } catch (Exception e) {
-            e.printStackTrace();
             ResponseMessage error = ResponseMessage.builder()
                                 .message("Error al recuperar productos proximos a expirar")
                                 .object(null)
                                 .build();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
+    //Endpoint para obtener el conteo de productos con bajo stock
     @GetMapping("/low-stock/count")
     public ResponseEntity<?> getLowProductsCount(){
         try {
@@ -122,16 +151,23 @@ public class ProductController {
                                 .object(low)
                                 .build();
 
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }catch(ResponseStatusException e){
+            ResponseMessage error = ResponseMessage.builder()
+                                    .message(e.getReason())
+                                    .object(null)
+                                    .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         } catch (Exception e) {
-            e.printStackTrace();
             ResponseMessage error = ResponseMessage.builder()
                                 .message("Error al recuperar productos con bajo stock")
                                 .object(null)
                                 .build();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
+
+    //Endpoint para obtener la lista de productos con bajo stock
     @GetMapping("/expiring-soon/count")
     public ResponseEntity<?> expiringSoonProductsCount(){
         try {
@@ -144,13 +180,73 @@ public class ProductController {
                                 .build();
 
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        }catch(ResponseStatusException e){
+            ResponseMessage error = ResponseMessage.builder()
+                                    .message(e.getReason())
+                                    .object(null)
+                                    .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         } catch (Exception e) {
-            e.printStackTrace();
             ResponseMessage error = ResponseMessage.builder()
                                 .message("Error al recuperar productos proximos a expirar")
                                 .object(null)
                                 .build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    //Endpoint para obtener la lista de productos vendidos en el mes
+    @GetMapping("/expired")
+    public ResponseEntity<?> getExpiredProducts(){
+        try {
+            List<ProductExpiringDto> products = productService.showExpiredProducts();
+            ResponseMessage response = ResponseMessage.builder()
+                                .message("Productos expirados obtenidos")
+                                .object(products)
+                                .build();
+
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        }catch(ResponseStatusException e){
+            ResponseMessage error = ResponseMessage.builder()
+                                    .message(e.getReason())
+                                    .object(null)
+                                    .build();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        } catch (Exception e) {
+            ResponseMessage error = ResponseMessage.builder()
+                                .message("Error al recuperar productos proximos a expirar")
+                                .object(null)
+                                .build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+    //Endpoint para obtener la lista de productos vendidos en el mes
+    @GetMapping("/sale/all")
+    public ResponseEntity<?> getSellProducts(){
+        try {
+            LocalDate fechaActual = LocalDate.now();
+
+            int month = fechaActual.getMonthValue();
+            int year = fechaActual.getYear();
+            List<SaleListDto> saleList = saleService.findSalesInMonth(month, year);
+            ResponseMessage response = ResponseMessage.builder()
+                                .message("Productos vendidos este mes")
+                                .object(saleList)
+                                .build();
+
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        }catch(ResponseStatusException e){
+            ResponseMessage error = ResponseMessage.builder()
+                                    .message(e.getReason())
+                                    .object(null)
+                                    .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        } catch (Exception e) {
+            ResponseMessage error = ResponseMessage.builder()
+                                .message("Error al recuperar productos proximos a expirar")
+                                .object(null)
+                                .build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
@@ -185,10 +281,17 @@ public class ProductController {
 
     }
 
+
+    //Endpoint para vender un producto
     @PostMapping("/sell")
     public ResponseEntity <?> sellProduct(@RequestBody ProductSellDto productDto ){
         try{
             ProductEntity product = productService.sellProduct(productDto);
+
+            saleService.saveSale(SaleEntity.builder()
+                                        .quantity(productDto.getQuantity())
+                                        .product(product)
+                                        .build());
             ProductSaveDto productdto = ProductSaveDto.builder()
                                                 .name(product.getName())
                                                 .price(product.getPrice())
@@ -198,7 +301,13 @@ public class ProductController {
                                 .message("Producto vendido correctamente por la cantidad de: " + productDto.getQuantity())
                                 .object(productdto)
                                 .build();
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }catch(EntityNotFoundException e){
+            ResponseMessage error = ResponseMessage.builder()
+                                    .message(e.getMessage())
+                                    .object(null)
+                                    .build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }catch(ResponseStatusException e){
             ResponseMessage error = ResponseMessage.builder()
                                     .message(e.getReason())
@@ -214,6 +323,8 @@ public class ProductController {
         }
 
     }
+
+    //Endpoint para modificar un producto
     @PutMapping
     public ResponseEntity <?> updateProduct(@RequestBody ProductUpdateDto productDto ){
         try{
@@ -226,7 +337,7 @@ public class ProductController {
                                 .message("Producto actualizado correctamente")
                                 .object(productdto)
                                 .build();
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         }catch(ResponseStatusException e){
             ResponseMessage error = ResponseMessage.builder()
                                     .message(e.getReason())
@@ -243,6 +354,8 @@ public class ProductController {
 
     }
 
+
+    //Endpoint para eliminar un producto
     @DeleteMapping("/{id}")
     public ResponseEntity <?>  deleteProduct (@PathVariable Long id){
         try {

@@ -27,16 +27,20 @@ public interface ProductDao extends CrudRepository <ProductEntity,Long> {
     Integer showCountLowProducts(@Param("idStore") Integer idStore);
 
     @Query("SELECT COUNT(p) FROM ProductEntity p " +
-        "WHERE p.expirationDate <= :limitDate AND p.category.store.idStore = :idStore")
-    Integer countExpiringSoon(@Param("limitDate") LocalDate limitDate, @Param("idStore") Integer idStore);
+        "WHERE p.expirationDate>= :currentTime AND  p.expirationDate <= :limitDate AND p.category.store.idStore = :idStore")
+    Integer countExpiringSoon(@Param("limitDate") LocalDate limitDate,@Param("currentTime") LocalDate currentTime, @Param("idStore") Integer idStore);
 
     @Query("SELECT new com.food_easy_back.backend_food_easy.model.dto.product.ProductLowDto(p.name, p.quantity) FROM ProductEntity p " +
        "WHERE p.quantity <= 5 AND p.category.store.idStore= :idStore")
     List<ProductLowDto> showLowProducts(@Param("idStore") Integer idStore);
 
     @Query("SELECT new com.food_easy_back.backend_food_easy.model.dto.product.ProductExpiringDto(p.name, p.expirationDate)  FROM ProductEntity p " +
-        "WHERE p.expirationDate <= :limitDate AND p.category.store.idStore = :idStore")
-    List<ProductExpiringDto> ExpiringSoon(@Param("limitDate") LocalDate limitDate, @Param("idStore") Integer idStore);
+        "WHERE p.expirationDate>= :currentTime AND p.expirationDate <= :limitDate AND p.category.store.idStore = :idStore")
+    List<ProductExpiringDto> ExpiringSoon(@Param("limitDate") LocalDate limitDate, @Param("currentTime") LocalDate currentTime, @Param("idStore") Integer idStore);
+
+    @Query("SELECT new com.food_easy_back.backend_food_easy.model.dto.product.ProductExpiringDto(p.name, p.expirationDate)  FROM ProductEntity p " +
+        "WHERE p.expirationDate < :limitDate AND p.category.store.idStore = :idStore")
+    List<ProductExpiringDto> ExpiredProducts(@Param("limitDate") LocalDate limitDate, @Param("idStore") Integer idStore);
 
 
 

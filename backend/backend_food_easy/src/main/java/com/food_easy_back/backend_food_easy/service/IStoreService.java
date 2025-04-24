@@ -8,7 +8,7 @@ public interface IStoreService {
     
     StoreEntity findById(Integer id);
 
-    void delete( StoreEntity Store);
+    void delete();
 
     boolean existStore(String namee);
 

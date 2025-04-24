@@ -3,9 +3,11 @@ package com.food_easy_back.backend_food_easy.service.CategoryServiceImpl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.food_easy_back.backend_food_easy.model.dao.CategoryDao;
 import com.food_easy_back.backend_food_easy.model.dao.UserDao;
@@ -48,6 +50,9 @@ public class CategoryServiceImpl implements ICategoryService {
     public CategoryEntity saveCategory(CategorySaveDto category) {
 
         UserEntity user = findByUsername(getCurrentUsername());
+        if(user==null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"El usuario no esta autenticado");
+        }
         StoreEntity store = user.getStore();
         CategoryEntity categoryEntity = CategoryEntity.builder()
                                                         .name(category.getName())
@@ -77,6 +82,9 @@ public class CategoryServiceImpl implements ICategoryService {
     @Override
     public List<CategoryEntity> getAllCategories() {
         UserEntity user = findByUsername(getCurrentUsername());
+        if(user==null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"El usuario no esta autenticado");
+        }
         StoreEntity store = user.getStore();
         return categoryDao.findAllByStore(store);
     }

@@ -53,6 +53,10 @@ public class ProductServiceImpl implements IProductService {
 
         CategoryEntity category = categoryService.findById(productDto.getCategory());
 
+        if(category ==null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se encontro la categoria." );
+        }
+
 
         ProductEntity product = ProductEntity.builder()
                                             .name(productDto.getName())
@@ -71,6 +75,10 @@ public class ProductServiceImpl implements IProductService {
 
 
         CategoryEntity category = categoryService.findById(productDto.getCategory());
+
+        if(category ==null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se encontro la categoria." );
+        }
 
 
         ProductEntity product = ProductEntity.builder()
@@ -132,6 +140,9 @@ public class ProductServiceImpl implements IProductService {
     public Page<ProductEntity> getProductsByCategory(String category,Pageable pageable) {
         UserEntity user = userDao.findByUsername(getCurrentUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no esta registrado"));
         StoreEntity store = user.getStore();
+        if(store==null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no tiene negocio asociado" );
+        }
         List<CategoryEntity> categories = store.getCategories();
         CategoryEntity categoryFinal = null;
         
@@ -163,9 +174,8 @@ public class ProductServiceImpl implements IProductService {
         StoreEntity store = user.getStore();
         Integer id = store.getIdStore();
         LocalDate limit = LocalDate.now().plusDays(5);
-        System.out.println(LocalDate.now().plusDays(5));
-        System.out.println(limit);
-        return productDao.countExpiringSoon(limit, id);
+        LocalDate currentTime = LocalDate.now();
+        return productDao.countExpiringSoon(limit,currentTime, id);
     }
 
     @Override
@@ -182,9 +192,17 @@ public class ProductServiceImpl implements IProductService {
         StoreEntity store = user.getStore();
         Integer id = store.getIdStore();
         LocalDate limit = LocalDate.now().plusDays(5);
-        System.out.println(LocalDate.now().plusDays(5));
-        System.out.println(limit);
-        return productDao.ExpiringSoon(limit, id);
+        LocalDate currentTime = LocalDate.now();
+        return productDao.ExpiringSoon(limit,currentTime, id);
+    }
+
+    @Override
+    public List<ProductExpiringDto> showExpiredProducts() {
+        UserEntity user = userDao.findByUsername(getCurrentUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no esta registrado"));
+        StoreEntity store = user.getStore();
+        Integer id = store.getIdStore();
+        LocalDate limit = LocalDate.now();
+        return productDao.ExpiredProducts(limit,id);
     }
 
 
