@@ -219,7 +219,7 @@ public class UserController {
 
     }
 
-    @PutMapping
+    @PutMapping("/password")
     public ResponseEntity<?> modifyUserPassword(@RequestBody UserPasswordDto userDto){
 
         try {      

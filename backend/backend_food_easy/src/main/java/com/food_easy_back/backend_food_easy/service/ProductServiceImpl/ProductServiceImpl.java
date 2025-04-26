@@ -49,9 +49,25 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public ProductEntity saveProduct(ProductSaveDto productDto) {
 
+        UserEntity user = userDao.findByUsername(getCurrentUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no esta registrado"));
+        StoreEntity store = user.getStore();
 
+        List<CategoryEntity> listCategory = store.getCategories();
 
         CategoryEntity category = categoryService.findById(productDto.getCategory());
+
+        boolean found = false;
+
+        for (CategoryEntity categories : listCategory) {
+            if (categories.getIdCategory().equals(category.getIdCategory())) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La categoria no es de tu negocio." );
+        }
 
         if(category ==null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se encontro la categoria." );
@@ -74,8 +90,26 @@ public class ProductServiceImpl implements IProductService {
 
 
 
+        UserEntity user = userDao.findByUsername(getCurrentUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no esta registrado"));
+        StoreEntity store = user.getStore();
+
+        List<CategoryEntity> listCategory = store.getCategories();
+
         CategoryEntity category = categoryService.findById(productDto.getCategory());
 
+        boolean found = false;
+
+        for (CategoryEntity categories : listCategory) {
+            if (categories.getIdCategory().equals(category.getIdCategory())) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La categoria no es de tu negocio." );
+        
+        }
         if(category ==null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se encontro la categoria." );
         }
@@ -124,6 +158,23 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public ProductEntity sellProduct(ProductSellDto productDto) {
         ProductEntity product = productDao.findById(productDto.getId()).orElseThrow(() -> new EntityNotFoundException("Producto no encontrado."));
+        UserEntity user = userDao.findByUsername(getCurrentUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no esta registrado"));
+        StoreEntity store = user.getStore();
+
+        List<CategoryEntity> listCategory = store.getCategories();
+
+        boolean found = false;
+
+        for (CategoryEntity categories : listCategory) {
+            if (categories.getIdCategory().equals(product.getCategory().getIdCategory())) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El producto no es de tu negocio." );
+        }
 
         if((product.getQuantity() - productDto.getQuantity())<0){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No puedes vender mas productos de los que hay en stock." );
