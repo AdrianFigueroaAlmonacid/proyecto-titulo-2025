@@ -33,7 +33,7 @@
 							required
 						/>
 					</div>
-					<button type="submit" class="btn btn-primary w-100">Iniciar</button>
+					<button type="submit" class="btn btn-primary w-100"> <strong>Iniciar</strong> </button>
 				</form>
 			</div>
 		</div>
