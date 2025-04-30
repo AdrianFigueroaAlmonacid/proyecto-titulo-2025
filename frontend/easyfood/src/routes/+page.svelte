@@ -2,14 +2,34 @@
 	import { goto } from '$app/navigation';
 	let username = '';
 	let password = '';
+	let error = '';
 
-	const handleLogin = () => {
-		goto('users/inicio');
+	const handleLogin = async () => {
+		try {
+			const response = await fetch('http://localhost:8081/api/v1/auth', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ username, password })
+			});
+	
+			if (response.ok) {
+				goto('/users/inicio');
+			} else {
+				error = response.message || 'Credenciales inválidas';
+				console.log(response,"error")
+				return;
+			}
+	
+			localStorage.setItem('token', response.token);
+
+		} catch (err) {
+			error = 'Error de conexión con el servidor';
+			console.log(err,"err")
+		}
 	};
 </script>
 
 <!-- <Navbar /> -->
-
 <div class="container vh-100 d-flex justify-content-center align-items-center">
 	<div class="" style="max-width: 500px;">
 		<div class="text-center mb-4">
@@ -35,6 +55,11 @@
 					</div>
 					<button type="submit" class="btn btn-primary w-100"> <strong>Iniciar</strong> </button>
 				</form>
+				{#if error}
+					<div class="alert alert-danger mt-3" role="alert">
+						{error}
+					</div>
+				{/if}
 			</div>
 		</div>
 	</div>
