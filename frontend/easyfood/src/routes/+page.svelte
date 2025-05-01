@@ -1,17 +1,15 @@
 <script>
+	import { postLogin } from "$lib/services/api";
 	import { goto } from '$app/navigation';
+
 	let username = '';
 	let password = '';
 	let error = '';
 
-	const handleLogin = async () => {
-		try {
-			const response = await fetch('http://localhost:8081/api/v1/auth', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ username, password })
-			});
-	
+	async function handleLogin() {
+			try {
+			const response = await postLogin(username, password);
+	console.log(response)
 			if (response.ok) {
 				goto('/users/inicio');
 			} else {
@@ -19,14 +17,13 @@
 				console.log(response,"error")
 				return;
 			}
-	
-			localStorage.setItem('token', response.token);
 
 		} catch (err) {
 			error = 'Error de conexión con el servidor';
 			console.log(err,"err")
 		}
-	};
+
+	}
 </script>
 
 <!-- <Navbar /> -->
@@ -38,7 +35,7 @@
 		</div>
 		<div class="card shadow">
 			<div class="card-body">
-				<form on:submit|preventDefault={handleLogin}>
+				<form on:submit|preventDefault={()=>handleLogin(username, password)}>
 					<div class="mb-3">
 						<label for="username" class="form-label">Usuario</label>
 						<input type="text" id="username" class="form-control" bind:value={username} required />

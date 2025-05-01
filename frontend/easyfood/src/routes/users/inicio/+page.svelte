@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
+	import { lowStock } from '$lib/services/api';
 	// Simulación de datos de inventario
 	let inventario = [
 		{ id: 1, nombre: 'Mantequilla', cantidad: 100, fechaVencimiento: '2025-05-10' },
@@ -56,6 +57,7 @@
 		obtenerProductosStockBajo();
 		obtenerMensajeDeBienvenida();
 		obtenerFechaHoy();
+		lowStock();
 	});
 </script>
 
