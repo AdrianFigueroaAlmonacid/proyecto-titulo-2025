@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend/backend_food_easy
+      dockerfile: Dockerfile
+    container_name: backend_food_easy
+    ports:
+      - "8081:8081"  
+    depends_on:
+      - mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql_db:3306/food_easy
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=12345
+    networks:
+      - app-network
+    command: ["/usr/local/bin/wait-for-it", "mysql:3306","--timeout=70" ,"--", "java", "-jar", "java-app.jar"]
+
+  frontend:
+    build:
+      context: ./frontend/easyfood
+      dockerfile: Dockerfile
+    container_name: frontend_food_easy
+    ports:
+      - "5173:4173"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:8.4.5
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+      MYSQL_DATABASE: food_easy
+      MYSQL_PASSWORD: 12345
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql  
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
