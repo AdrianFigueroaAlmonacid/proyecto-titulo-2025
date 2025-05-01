@@ -139,10 +139,9 @@ Implementación de JWT (JSON Web Tokens) para la autenticación sin estado (stat
 Los tokens se generan tras un login exitoso y se usan para autenticar las solicitudes subsecuentes, reduciendo la exposición de credenciales sensibles.
 
 
-7. 
+7. Proceso de despliegue (manual)
 
 
-Proceso de despliegue (manual)
 1️⃣ Preparar Docker Compose para entorno local
 En el proyecto tienes algo así:
 
