@@ -28,7 +28,10 @@ Diagrama de arquitectura: La arquitectura por capas divide el software en módul
 ![Arquitectura en capas](images/arquitecturacapas.png)
 
 
+
 3. Frontend POR DEFINIR
+
+
 Tecnologías y frameworks utilizados.
 
 Estructura de carpetas del frontend.
@@ -42,7 +45,11 @@ Integración con backend .
 Control de errores.
 
 Sistema de diseño.
+
+
 4. Backend
+
+
 Lenguaje y framework : Java con Spring Boot
 
 Estructura de carpetas:
@@ -105,10 +112,13 @@ Hibernate: proveedor ORM que gestiona la conversión entre entidades Java y tabl
 
 Datasource configurado en application.properties: define los parámetros de conexión (URL, usuario, contraseña, dialecto).
 
+
 5. Testing
 
 
 6. Seguridad
+
+
 En el proyecto se implementaron varias medidas de seguridad clave para proteger tanto los datos como el acceso a la aplicación:
 
 Protección contra ataques comunes:
@@ -128,7 +138,10 @@ Implementación de JWT (JSON Web Tokens) para la autenticación sin estado (stat
 
 Los tokens se generan tras un login exitoso y se usan para autenticar las solicitudes subsecuentes, reduciendo la exposición de credenciales sensibles.
 
+
 7. 
+
+
 Proceso de despliegue (manual)
 1️⃣ Preparar Docker Compose para entorno local
 En el proyecto tienes algo así:
@@ -153,6 +166,7 @@ Esto construye imágenes y levanta contenedores para todos los servicios.
 Para verificar el contenedor:
 
 docker ps
+
 
 4️⃣Poblar la base de datos con el administrador del sistema y agregar un negocio
 
@@ -194,10 +208,14 @@ y posteriormente llamar al endpoint para crear un negocio con su dueño y creden
 
 
 2️⃣ Pruebas locales
+
 Accede a las URLs locales (ej. localhost:5173 para frontend, localhost:8081 para backend).
 Verifica conexión a MySQL (el contenedor debe estar corriendo y accesible).
 
+
 3️⃣ Despliegue en Render (backend y frontend)
+
+
 Como Render no permite docker-compose directamente, deberás:
 
 Crear 2 servicios web separados en Render:
@@ -230,18 +248,22 @@ Docker Compose	Orquestación local de frontend, backend y MySQL.
 Render	Despliegue en la nube (sin Compose, usando servicios web independientes ya que no se puede desplegar con docker compose).
 MySQL (externo)	Base de datos en la nube (Render Database, PlanetScale, AWS RDS, etc.).
 
+
 8. Guía de Instalación
+
 
 Consulta la [Guía de Instalación del backend](./backend/backend_food_easy/README.md) para más detalles.
 
 
 9. Uso del Proyecto
 
+
 Flujo de uso de la aplicación (registro, login, navegación).
 
 Ejemplos visuales o capturas de pantalla.
 
 10. Consideraciones Finales
+
 Retos encontrados.
 
 Posibles mejoras futuras.

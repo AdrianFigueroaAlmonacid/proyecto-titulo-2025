@@ -210,6 +210,16 @@ public class ProductServiceImpl implements IProductService {
 
         return productDao.findAllByCategory(categoryFinal, pageable);
     }
+    @Override
+    public Page<ProductEntity> getProducts(Pageable pageable) {
+        UserEntity user = userDao.findByUsername(getCurrentUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no esta registrado"));
+        StoreEntity store = user.getStore();
+        if(store==null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario no tiene negocio asociado" );
+        }
+
+        return productDao.findAllByStore(store.getIdStore(),pageable);
+    }
 
     @Override
     public Integer showCountLowProducts() {

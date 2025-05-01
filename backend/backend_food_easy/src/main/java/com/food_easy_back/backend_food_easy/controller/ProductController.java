@@ -46,10 +46,47 @@ public class ProductController {
     public ProductController(IProductService productService, ISaleService saleService) {
         this.productService = productService;
         this.saleService = saleService;
+
+        
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getProducts(@PathVariable String category,Pageable pageable){
+        try {
+
+            Page<ProductEntity> productsPage = productService.getProducts( pageable);
+            Page<ProductListDto> dtoPage = productsPage.map(u -> ProductListDto.builder()
+                                                                .category(u.getCategory().getName())
+                                                                .name(u.getName())
+                                                                .price(u.getPrice())
+                                                                .id(u.getIdProduct())
+                                                                .quantity(u.getQuantity())
+                                                                .expirationDate(u.getExpirationDate())
+                                                                .build());
+            ResponseMessage response = ResponseMessage.builder()
+                                .message("Productos recuperados correctamente")
+                                .object(dtoPage)
+                                .build();
+
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        }catch(ResponseStatusException e){
+            ResponseMessage error = ResponseMessage.builder()
+                                    .message(e.getReason())
+                                    .object(null)
+                                    .build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ResponseMessage error = ResponseMessage.builder()
+                                .message("Error al recuperar productos")
+                                .object(null)
+                                .build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
     }
     //Metodo get para obtener productos con su categoria
     @GetMapping("/{category}")
-    public ResponseEntity<?> getProducts(@PathVariable String category,Pageable pageable){
+    public ResponseEntity<?> getProductsByCategory(@PathVariable String category,Pageable pageable){
         try {
 
             Page<ProductEntity> productsPage = productService.getProductsByCategory(category, pageable);

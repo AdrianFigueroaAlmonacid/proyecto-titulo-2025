@@ -22,6 +22,10 @@ public interface ProductDao extends CrudRepository <ProductEntity,Long> {
 
     Page<ProductEntity> findAllByCategory(CategoryEntity category, Pageable page);
 
+    @Query("SELECT p FROM ProductEntity p WHERE p.category.store.idStore = :idStore")
+    Page<ProductEntity> findAllByStore(@Param("idStore") Integer idStore, Pageable pageable);
+
+
     @Query("SELECT COUNT(p) FROM ProductEntity p " +
        "WHERE p.quantity <= 5 AND p.category.store.idStore= :idStore")
     Integer showCountLowProducts(@Param("idStore") Integer idStore);
