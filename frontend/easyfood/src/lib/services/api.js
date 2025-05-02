@@ -1,63 +1,59 @@
-const URL= "http://localhost:8081/api/v1/"
-let KEY = ""
-
-
+const URL = 'http://localhost:8081/api/v1/';
+let KEY = '';
 
 // auth login
 let error = '';
 
 export const postLogin = async (username, password) => {
-    try {
-        const response = await fetch(`${URL}auth`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
+	try {
+		const response = await fetch(`${URL}auth`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ username, password })
+		});
 
+		if (response.ok) {
+			KEY = response.headers.get('Authorization');
+            // console.log(KEY)
 
-        if (response.ok) { 
-        KEY = response.headers.get('Authorization');
+			localStorage.setItem('token', KEY);
 
-        localStorage.setItem('token',KEY);
-        console.log(response.headers.get('Authorization') ,"token prueba")
-
-            return response;
-        } else {
-            console.log(response,"error")
-            return response;
-        }
-
-
-    } catch (err) {
-        console.log(err,"err")
-    }
+			return response;
+		} else {
+			// console.log(response, 'error');
+			return response;
+		}
+	} catch (err) {
+		console.log(err, 'err');
+	}
 };
-
 
 // llamada productos inicio
 
 export const lowStock = async () => {
-    // localStorage.getItem('token')
-    console.log(KEY,"key prueba")
+    const token = localStorage.getItem('token'); 
+// console.log("lowStock",token)
     try {
-        const response = await fetch(`${URL}low-stock`, {
+        // console.log(`Bearer ${token.trim()}`)
+        const response = await fetch(`${URL}product/low-stock`, {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json','Authorization':`Bearer ${KEY}`}
-    
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token.trim()}`
+            }
         });
 
-        console.log(response)
-        // if (response.ok) {
-        // localStorage.setItem('token', response.token);
-
-        //     return response;
-        // } else {
-        //     console.log(response,"error")
-        //     return response;
-        // }
-
+        if (response.ok) {
+            const data = await response.json(); 
+            console.log(data, "productos con poco stock");
+            return data;
+        } else {
+            console.log("Error en respuesta:", response.status);
+            return null;
+        }
 
     } catch (err) {
-        console.log(err,"err")
+        console.log("Error de conexión:", err);
+        return null;
     }
 };

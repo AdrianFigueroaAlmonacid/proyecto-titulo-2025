@@ -1,5 +1,5 @@
 <script>
-	import { postLogin } from "$lib/services/api";
+	import { postLogin } from '$lib/services/api';
 	import { goto } from '$app/navigation';
 
 	let username = '';
@@ -7,26 +7,23 @@
 	let error = '';
 
 	async function handleLogin() {
-			try {
+		try {
 			const response = await postLogin(username, password);
-	console.log(response)
+			console.log(response);
 			if (response.ok) {
 				goto('/users/inicio');
 			} else {
 				error = response.message || 'Credenciales inválidas';
-				console.log(response,"error")
+				console.log(response, 'error');
 				return;
 			}
-
 		} catch (err) {
 			error = 'Error de conexión con el servidor';
-			console.log(err,"err")
+			console.log(err, 'err');
 		}
-
 	}
 </script>
 
-<!-- <Navbar /> -->
 <div class="container vh-100 d-flex justify-content-center align-items-center">
 	<div class="" style="max-width: 500px;">
 		<div class="text-center mb-4">
@@ -35,7 +32,7 @@
 		</div>
 		<div class="card shadow">
 			<div class="card-body">
-				<form on:submit|preventDefault={()=>handleLogin(username, password)}>
+				<form on:submit|preventDefault={() => handleLogin(username, password)}>
 					<div class="mb-3">
 						<label for="username" class="form-label">Usuario</label>
 						<input type="text" id="username" class="form-control" bind:value={username} required />
