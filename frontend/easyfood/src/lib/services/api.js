@@ -14,13 +14,12 @@ export const postLogin = async (username, password) => {
 
 		if (response.ok) {
 			KEY = response.headers.get('Authorization');
-            // console.log(KEY)
 
 			localStorage.setItem('token', KEY);
 
 			return response;
 		} else {
-			// console.log(response, 'error');
+			console.log(response, 'error');
 			return response;
 		}
 	} catch (err) {
@@ -28,13 +27,10 @@ export const postLogin = async (username, password) => {
 	}
 };
 
-// llamada productos inicio
-
+// llamada productos bajo stock
 export const lowStock = async () => {
     const token = localStorage.getItem('token'); 
-// console.log("lowStock",token)
     try {
-        // console.log(`Bearer ${token.trim()}`)
         const response = await fetch(`${URL}product/low-stock`, {
             method: 'GET',
             headers: {
@@ -46,6 +42,36 @@ export const lowStock = async () => {
         if (response.ok) {
             const data = await response.json(); 
             console.log(data, "productos con poco stock");
+            return data;
+        } else {
+            console.log("Error en respuesta:", response.status);
+            return null;
+        }
+
+    } catch (err) {
+        console.log("Error de conexión:", err);
+        return null;
+    }
+};
+
+
+// llamada productos por vencer
+export const expiringSoon = async () => {
+    const token = localStorage.getItem('token'); 
+
+    try {
+       
+        const response = await fetch(`${URL}product/expiring-soon`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token.trim()}`
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json(); 
+            console.log(data, "productos por vencer");
             return data;
         } else {
             console.log("Error en respuesta:", response.status);

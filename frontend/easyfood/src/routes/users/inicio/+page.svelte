@@ -1,23 +1,13 @@
-
 <script>
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import { lowStock } from '$lib/services/api';
+	import { lowStock, expiringSoon } from '$lib/services/api';
 
 	let productosPorVencer = [];
 	let productosStockBajo = [];
 	let mensaje = '';
 	let fechaHoy = '';
 	let nameUserAuth = 'usuario';
-
-	// Filtrar productos por fecha de vencimiento
-	const obtenerProductosPorVencer = () => {
-		const hoy = new Date();
-		productosPorVencer = inventario.filter((producto) => {
-			const fechaVencimiento = new Date(producto.fechaVencimiento);
-			return fechaVencimiento <= hoy.setDate(hoy.getDate() + 7); // productos que vencen en 7 días o menos
-		});
-	};
 
 	// Mensaje de buenos días según la hora
 	const obtenerMensajeDeBienvenida = () => {
@@ -44,26 +34,41 @@
 		obtenerMensajeDeBienvenida();
 		obtenerFechaHoy();
 
-		// Obtener productos con stock bajo desde la API
-		const productos = await lowStock();
-		if (productos?.object) {
-			productosStockBajo = productos.object.map(p => ({
+		// Productos con bajo stock
+		const productosStock = await lowStock();
+		if (productosStock?.object) {
+			productosStockBajo = productosStock.object.map((p) => ({
 				nombre: p.name,
 				cantidad: p.quantity
 			}));
 		}
 
-		// Si quieres eliminar esta parte, borra la variable inventario y esta función
-		obtenerProductosPorVencer();
-	});
+		// Productos por vencer
+		const productosVencimiento = await expiringSoon();
+if (productosVencimiento?.object) {
+	productosPorVencer = productosVencimiento.object
+		.filter(p => !!p.date)
+		.map(p => {
+			const fecha = new Date(p.date);
+			if (isNaN(fecha)) {
+				console.warn('Fecha inválida en producto:', p);
+				return null;
+			}
 
-	// Si tienes productos con fecha de vencimiento simulados, defínelos aquí
-	let inventario = [
-		{ nombre: 'Leche blanca', cantidad: 5, fechaVencimiento: '2025-04-15' },
-		{ nombre: 'Carne molida', cantidad: 200, fechaVencimiento: '2025-06-01' },
-		{ nombre: 'Pollo congelado', cantidad: 3, fechaVencimiento: '2025-04-10' },
-		{ nombre: 'Croquetas', cantidad: 5, fechaVencimiento: '2025-05-20' }
-	];
+			const dia = String(fecha.getDate()).padStart(2, '0');
+			const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+			const año = fecha.getFullYear();
+			const fechaFormateada = `${dia}-${mes}-${año}`;
+
+			return {
+				nombre: p.name,
+				fechaVencimiento: fechaFormateada
+			};
+		})
+		.filter(Boolean);
+}
+
+	});
 </script>
 
 <div class="container mt-5 d-flex justify-content-center align-items-center row m-auto">
