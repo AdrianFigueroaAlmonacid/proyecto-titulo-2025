@@ -19,6 +19,7 @@ public class ProductListDto {
     private String name;
     private double price;
     private Integer quantity;
+    private Long categoryChange;
     private String category;
     private LocalDate expirationDate;
 
