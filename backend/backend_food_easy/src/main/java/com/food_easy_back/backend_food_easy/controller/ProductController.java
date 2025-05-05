@@ -51,7 +51,7 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getProducts(@PathVariable String category,Pageable pageable){
+    public ResponseEntity<?> getProducts(Pageable pageable){
         try {
 
             Page<ProductEntity> productsPage = productService.getProducts( pageable);

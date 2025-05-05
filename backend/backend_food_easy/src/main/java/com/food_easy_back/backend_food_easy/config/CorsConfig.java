@@ -46,7 +46,7 @@ public class CorsConfig {
         corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:5173/"));
         corsConfiguration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
-        corsConfiguration.setExposedHeaders(Arrays.asList("Authorization")); // ← permite leer el token desde el frontend
+        corsConfiguration.setExposedHeaders(Arrays.asList("Authorization")); 
         corsConfiguration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

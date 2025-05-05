@@ -1,10 +1,12 @@
 <script>
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import { lowStock, expiringSoon } from '$lib/services/api';
+	import { lowStock, lowStockCount, expiringSoon, expiringSoonCount } from '$lib/services/api';
 
 	let productosPorVencer = [];
 	let productosStockBajo = [];
+	let cantidadPorVencer = 0;
+	let cantidadStockBajo = 0;
 	let mensaje = '';
 	let fechaHoy = '';
 	let nameUserAuth = 'usuario';
@@ -33,6 +35,17 @@
 	onMount(async () => {
 		obtenerMensajeDeBienvenida();
 		obtenerFechaHoy();
+
+		const productosStockCount = await lowStockCount();
+		if (productosStockCount !== null) {
+			cantidadStockBajo = productosStockCount;
+		}
+
+		// Llamada para obtener la cantidad de productos por vencer
+		const productosPorVencerCount = await expiringSoonCount();
+		if (productosPorVencerCount !== null) {
+			cantidadPorVencer = productosPorVencerCount;
+		}
 
 		// Productos con bajo stock
 		const productosStock = await lowStock();
@@ -80,7 +93,7 @@ if (productosVencimiento?.object) {
 	<div class="row text-center mt-5">
 		<!-- Resumen de productos por vencer -->
 		<div class="col-md-6">
-			<h3>Productos por Vencer</h3>
+			<h3>Productos por Vencer ({cantidadPorVencer})</h3>
 			{#if productosPorVencer.length > 0}
 				<div class="alert alert-danger" role="alert">
 					<ul class="list-group">
@@ -99,7 +112,7 @@ if (productosVencimiento?.object) {
 
 		<!-- Resumen de productos con stock bajo -->
 		<div class="col-md-6">
-			<h3>Productos con Stock Bajo</h3>
+			<h3>Productos con Stock Bajo ({cantidadStockBajo})</h3>
 			{#if productosStockBajo.length > 0}
 				<div class="alert alert-warning">
 					<ul class="list-group">
