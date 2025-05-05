@@ -121,6 +121,7 @@ public class ProductServiceImpl implements IProductService {
                                             .price(productDto.getPrice())
                                             .quantity(productDto.getQuantity())
                                             .category(category)
+                                            .expirationDate(productDto.getExpirationDate())
                                             .build();
         return productDao.save(product);
     }
