@@ -56,6 +56,7 @@ public class ProductController {
 
             Page<ProductEntity> productsPage = productService.getProducts( pageable);
             Page<ProductListDto> dtoPage = productsPage.map(u -> ProductListDto.builder()
+                                                                .categoryChange(u.getCategory().getIdCategory())
                                                                 .category(u.getCategory().getName())
                                                                 .name(u.getName())
                                                                 .price(u.getPrice())
@@ -91,6 +92,7 @@ public class ProductController {
 
             Page<ProductEntity> productsPage = productService.getProductsByCategory(category, pageable);
             Page<ProductListDto> dtoPage = productsPage.map(u -> ProductListDto.builder()
+                                                                .categoryChange(u.getCategory().getIdCategory())
                                                                 .category(u.getCategory().getName())
                                                                 .name(u.getName())
                                                                 .price(u.getPrice())
