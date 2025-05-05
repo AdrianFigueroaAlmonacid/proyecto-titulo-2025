@@ -181,7 +181,6 @@ export const getProducts = async () => {
 
 		if (response.ok) {
 			const data = await response.json();
-            console.log("respuesta", response )
 	        return data.object.content; 
 		} else {
 			console.log("Error al obtener productos:", response.status);
@@ -194,37 +193,44 @@ export const getProducts = async () => {
 	}
 };
 
-// edicion producto
-export async function updateProduct(product, token) {
-	try {
-		const response = await fetch(`${URL}product/${id}`, {
-			method: 'PUT',  // Debes usar PUT para actualizar un producto
-			headers: {
-				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${token.trim()}`
-			},
-			body: JSON.stringify(product)
-		});
 
-		if (response.ok) {
-			console.log("Producto actualizado correctamente");
-			return true;
-		} else {
-			console.log("Error al actualizar producto:", response.status);
-			return false;
-		}
-	} catch (error) {
-		console.error('Error al actualizar producto:', error);
-		return false;
-	}
+// actualizar producto
+export async function updateProduct(product, token) {
+    console.log("Enviando token:", token);
+    console.log("Body JSON:", JSON.stringify(product));
+
+    try {
+        const response = await fetch(`${URL}product`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token.trim()}`
+            },
+            body: JSON.stringify(product)
+        });
+
+        if (response.ok) {
+            console.log("Producto actualizado correctamente");
+            return true;
+        } else {
+            console.log("Error al actualizar producto:", response.status);
+            const errorText = await response.text();
+            console.log("Respuesta del servidor:", errorText);
+            return false;
+        }
+    } catch (error) {
+        console.error('Error al actualizar producto:', error);
+        return false;
+    }
 }
+
 
 
 // borrar producto
 export async function deleteProduct(id, token) {
 	try {
 		const response = await fetch(`${URL}product/${id}`, {
-			method: 'DELETE',  // Debes usar DELETE para eliminar un producto
+			method: 'DELETE',  
 			headers: {
 				'Authorization': `Bearer ${token.trim()}`
 			}
@@ -239,6 +245,35 @@ export async function deleteProduct(id, token) {
 		}
 	} catch (error) {
 		console.error('Error al eliminar producto:', error);
+		return false;
+	}
+}
+
+
+// add productos
+
+export async function createProduct(product, token) {
+	try {
+		const response = await fetch(`${URL}product`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token.trim()}`
+			},
+			body: JSON.stringify(product)
+		});
+
+		if (response.ok) {
+			console.log("Producto creado correctamente");
+			return true;
+		} else {
+			console.log("Error al crear producto:", response.status);
+			const errorText = await response.text();
+			console.log("Respuesta del servidor:", errorText);
+			return false;
+		}
+	} catch (error) {
+		console.error('Error al crear producto:', error);
 		return false;
 	}
 }

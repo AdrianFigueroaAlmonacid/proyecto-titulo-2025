@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { jsPDF } from 'jspdf';
-	import { getProducts, updateProduct, deleteProduct } from '$lib/services/api';
+	import { getProducts, updateProduct, deleteProduct, createProduct } from '$lib/services/api';
 
 	let productos = [];
 	let categorias = [];
@@ -38,7 +38,7 @@
 		producto = datos
 			? { ...datos }
 			: {
-					id:'' ,
+					id:null ,
 					name: '',
 					price: '',
 					quantity: '',
@@ -48,6 +48,32 @@
 		const modal = new bootstrap.Modal(document.getElementById('productoModal'));
 		modal.show();
 	}
+
+
+
+
+// guardar producto 
+async function guardarProducto() {
+  const token = localStorage.getItem('token');
+
+  if (isEdit && producto.id) {
+    const ok = await updateProduct(producto, token);
+    if (ok) {
+      console.log('Producto actualizado');
+      location.reload(); // o actualiza solo la lista si prefieres
+    } else {
+      console.log('Error al actualizar producto');
+    }
+  } else {
+    const ok = await createProduct(producto, token);
+    if (ok) {
+      console.log('Producto creado');
+      location.reload();
+    } else {
+      console.log('Error al crear producto');
+    }
+  }
+}
 
 	// Eliminar producto
 	async function eliminarProducto(id) {
