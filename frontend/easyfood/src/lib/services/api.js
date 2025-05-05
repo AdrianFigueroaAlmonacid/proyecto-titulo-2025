@@ -14,9 +14,7 @@ export const postLogin = async (username, password) => {
 
 		if (response.ok) {
 			KEY = response.headers.get('Authorization');
-
 			localStorage.setItem('token', KEY);
-
 			return response;
 		} else {
 			console.log(response, 'error');
@@ -80,6 +78,7 @@ export const lowStockCount = async () => {
         return null;
     }
 };
+
 // llamada cantidad productos por vencer
 export const expiringSoonCount = async () => {
     const token = localStorage.getItem('token'); 
@@ -182,6 +181,7 @@ export const getProducts = async () => {
 
 		if (response.ok) {
 			const data = await response.json();
+            console.log("respuesta", response )
 	        return data.object.content; 
 		} else {
 			console.log("Error al obtener productos:", response.status);
@@ -193,3 +193,52 @@ export const getProducts = async () => {
 		return null;
 	}
 };
+
+// edicion producto
+export async function updateProduct(product, token) {
+	try {
+		const response = await fetch(`${URL}product/${id}`, {
+			method: 'PUT',  // Debes usar PUT para actualizar un producto
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token.trim()}`
+			},
+			body: JSON.stringify(product)
+		});
+
+		if (response.ok) {
+			console.log("Producto actualizado correctamente");
+			return true;
+		} else {
+			console.log("Error al actualizar producto:", response.status);
+			return false;
+		}
+	} catch (error) {
+		console.error('Error al actualizar producto:', error);
+		return false;
+	}
+}
+
+
+// borrar producto
+export async function deleteProduct(id, token) {
+	try {
+		const response = await fetch(`${URL}product/${id}`, {
+			method: 'DELETE',  // Debes usar DELETE para eliminar un producto
+			headers: {
+				'Authorization': `Bearer ${token.trim()}`
+			}
+		});
+
+		if (response.ok) {
+			console.log("Producto eliminado correctamente");
+			return true;
+		} else {
+			console.log("Error al eliminar producto:", response.status);
+			return false;
+		}
+	} catch (error) {
+		console.error('Error al eliminar producto:', error);
+		return false;
+	}
+}
