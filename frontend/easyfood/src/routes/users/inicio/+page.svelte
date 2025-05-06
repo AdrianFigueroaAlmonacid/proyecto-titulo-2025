@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import { lowStock, lowStockCount, expiringSoon, expiringSoonCount } from '$lib/services/api';
+	import {postLogin, lowStock, lowStockCount, expiringSoon, expiringSoonCount } from '$lib/services/api';
 
 	let productosPorVencer = [];
 	let productosStockBajo = [];
@@ -9,7 +9,10 @@
 	let cantidadStockBajo = 0;
 	let mensaje = '';
 	let fechaHoy = '';
-	let nameUserAuth = 'usuario';
+	let nameUserAuth = localStorage.getItem('username') || '';
+	// console.log(localStorage.getItem('username'))
+
+
 
 	// Mensaje de buenos días según la hora
 	const obtenerMensajeDeBienvenida = () => {

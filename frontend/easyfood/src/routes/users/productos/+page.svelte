@@ -27,7 +27,7 @@
 		const resultado = await getProducts();
 		if (resultado) {
 			productos = resultado;
-			categorias = [...new Set(productos.map(p => p.category))];
+			categorias = [...new Set(productos.map((p) => p.category))];
 		} else {
 			console.error('No se pudo cargar productos desde la API.');
 		}
@@ -38,7 +38,7 @@
 		producto = datos
 			? { ...datos }
 			: {
-					id:null ,
+					id: null,
 					name: '',
 					price: '',
 					quantity: '',
@@ -49,31 +49,29 @@
 		modal.show();
 	}
 
+	// guardar producto
+	async function guardarProducto() {
+		const token = localStorage.getItem('token');
 
-
-
-// guardar producto 
-async function guardarProducto() {
-  const token = localStorage.getItem('token');
-
-  if (isEdit && producto.id) {
-    const ok = await updateProduct(producto, token);
-    if (ok) {
-      console.log('Producto actualizado');
-      location.reload(); // o actualiza solo la lista si prefieres
-    } else {
-      console.log('Error al actualizar producto');
-    }
-  } else {
-    const ok = await createProduct(producto, token);
-    if (ok) {
-      console.log('Producto creado');
-      location.reload();
-    } else {
-      console.log('Error al crear producto');
-    }
-  }
-}
+		if (isEdit && producto.id) {
+			const ok = await updateProduct(producto, token);
+			console.log(producto, 'Producto');
+			if (ok) {
+				console.log(producto, 'Producto actualizado');
+				location.reload();
+			} else {
+				console.log('Error al actualizar producto');
+			}
+		} else {
+			const ok = await createProduct(producto, token);
+			if (ok) {
+				console.log('Producto creado');
+				location.reload();
+			} else {
+				console.log('Error al crear producto');
+			}
+		}
+	}
 
 	// Eliminar producto
 	async function eliminarProducto(id) {
@@ -116,7 +114,10 @@ async function guardarProducto() {
 </script>
 
 <!-- HTML -->
-<div class="container row d-flex justify-content-center text-center" style="max-width: 1200px; margin:50px auto;">
+<div
+	class="container row d-flex justify-content-center text-center"
+	style="max-width: 1200px; margin:50px auto;"
+>
 	<div class="text-center"><h1>Administración de Productos</h1></div>
 
 	<div class="d-flex justify-content-between align-items-center mb-3">
@@ -185,14 +186,21 @@ async function guardarProducto() {
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="productoModal" tabindex="-1" aria-labelledby="productoModalLabel" aria-hidden="true">
+<div
+	class="modal fade"
+	id="productoModal"
+	tabindex="-1"
+	aria-labelledby="productoModalLabel"
+	aria-hidden="true"
+>
 	<div class="modal-dialog">
 		<div class="modal-content" transition:fade>
 			<div class="modal-header">
 				<h5 class="modal-title" id="productoModalLabel">
 					{isEdit ? 'Editar Producto' : 'Agregar Producto'}
 				</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"
+				></button>
 			</div>
 			<div class="modal-body">
 				<form on:submit|preventDefault={guardarProducto}>
@@ -226,5 +234,3 @@ async function guardarProducto() {
 		</div>
 	</div>
 </div>
-
-

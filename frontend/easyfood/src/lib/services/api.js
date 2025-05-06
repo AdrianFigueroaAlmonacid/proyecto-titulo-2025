@@ -10,12 +10,17 @@ export const postLogin = async (username, password) => {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ username, password })
+            
 		});
-
+        console.log(response)
 		if (response.ok) {
 			KEY = response.headers.get('Authorization');
 			localStorage.setItem('token', KEY);
+            localStorage.setItem('username', username);
+            // console.log(response.username)
+
 			return response;
+         
 		} else {
 			console.log(response, 'error');
 			return response;
@@ -196,8 +201,8 @@ export const getProducts = async () => {
 
 // actualizar producto
 export async function updateProduct(product, token) {
-    console.log("Enviando token:", token);
-    console.log("Body JSON:", JSON.stringify(product));
+    console.log(product);
+    // console.log("Body JSON:", JSON.stringify(product));
 
     try {
         const response = await fetch(`${URL}product`, {
@@ -225,32 +230,7 @@ export async function updateProduct(product, token) {
 }
 
 
-
-// borrar producto
-export async function deleteProduct(id, token) {
-	try {
-		const response = await fetch(`${URL}product/${id}`, {
-			method: 'DELETE',  
-			headers: {
-				'Authorization': `Bearer ${token.trim()}`
-			}
-		});
-
-		if (response.ok) {
-			console.log("Producto eliminado correctamente");
-			return true;
-		} else {
-			console.log("Error al eliminar producto:", response.status);
-			return false;
-		}
-	} catch (error) {
-		console.error('Error al eliminar producto:', error);
-		return false;
-	}
-}
-
-
-// add productos
+// agregar productos
 
 export async function createProduct(product, token) {
 	try {
@@ -274,6 +254,29 @@ export async function createProduct(product, token) {
 		}
 	} catch (error) {
 		console.error('Error al crear producto:', error);
+		return false;
+	}
+}
+
+// borrar producto
+export async function deleteProduct(id, token) {
+	try {
+		const response = await fetch(`${URL}product/${id}`, {
+			method: 'DELETE',  
+			headers: {
+				'Authorization': `Bearer ${token.trim()}`
+			}
+		});
+
+		if (response.ok) {
+			console.log("Producto eliminado correctamente");
+			return true;
+		} else {
+			console.log("Error al eliminar producto:", response.status);
+			return false;
+		}
+	} catch (error) {
+		console.error('Error al eliminar producto:', error);
 		return false;
 	}
 }
