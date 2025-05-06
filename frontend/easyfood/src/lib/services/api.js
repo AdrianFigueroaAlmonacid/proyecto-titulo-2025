@@ -17,7 +17,6 @@ export const postLogin = async (username, password) => {
 			KEY = response.headers.get('Authorization');
 			localStorage.setItem('token', KEY);
             localStorage.setItem('username', username);
-            // console.log(response.username)
 
 			return response;
          
@@ -201,8 +200,6 @@ export const getProducts = async () => {
 
 // actualizar producto
 export async function updateProduct(product, token) {
-    console.log(product);
-    // console.log("Body JSON:", JSON.stringify(product));
 
     try {
         const response = await fetch(`${URL}product`, {
@@ -279,4 +276,15 @@ export async function deleteProduct(id, token) {
 		console.error('Error al eliminar producto:', error);
 		return false;
 	}
+}
+
+
+// log out
+export function logout() {
+	localStorage.removeItem('token');
+	// localStorage.removeItem('username');
+	// mensaje = 'Sesión cerrada correctamente';
+	
+	// Si usas routing (como SvelteKit), redirige:
+	window.location.href = '/';
 }

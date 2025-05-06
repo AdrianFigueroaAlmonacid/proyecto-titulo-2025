@@ -43,7 +43,7 @@
 					price: '',
 					quantity: '',
 					expirationDate: '',
-					category: ''
+					category: '',
 				};
 		const modal = new bootstrap.Modal(document.getElementById('productoModal'));
 		modal.show();

@@ -1,3 +1,10 @@
+
+<script>
+import { onMount } from 'svelte';
+import { fade } from 'svelte/transition';
+import { logout } from '$lib/services/api';
+</script>
+
 <nav class="navbar navbar-expand-lg">
 	<div class="container-fluid">
 		<a class="navbar-brand" href="/users/inicio">Easy Food</a>
@@ -28,7 +35,7 @@
 				</li>
 
 				<li>
-					<button type="button" class="btn btn-danger">
+					<button type="button" class="btn btn-danger" on:click={logout}>
 						Cerrar sesión <i class="bi bi-box-arrow-in-left"></i>
 					</button>
 				</li>
