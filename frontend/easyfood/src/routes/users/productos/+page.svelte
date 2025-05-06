@@ -2,7 +2,12 @@
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { jsPDF } from 'jspdf';
-	import { getProducts, updateProduct, deleteProduct, createProduct } from '$lib/services/api';
+	import {
+		getProducts,
+		updateProduct,
+		deleteProduct,
+		createProduct, getCategory
+	} from '$lib/services/api';
 
 	let productos = [];
 	let categorias = [];
@@ -20,34 +25,40 @@
 	let categoriaSeleccionada = 'todas';
 
 	$: productosFiltrados = productos.filter(
-		(p) => categoriaSeleccionada === 'todas' || p.category === categoriaSeleccionada
-	);
+	(p) => categoriaSeleccionada === 'todas' || p.category === categoriaSeleccionada);
 
 	onMount(async () => {
-		const resultado = await getProducts();
-		if (resultado) {
-			productos = resultado;
-			categorias = [...new Set(productos.map((p) => p.category))];
-		} else {
-			console.error('No se pudo cargar productos desde la API.');
-		}
-	});
+		productos = await getProducts();;
 
+		categorias = await getCategory();
+
+	});
 	function abrirModal(nuevo = true, datos = null) {
-		isEdit = !nuevo;
-		producto = datos
-			? { ...datos }
-			: {
-					id: null,
-					name: '',
-					price: '',
-					quantity: '',
-					expirationDate: '',
-					category: '',
-				};
-		const modal = new bootstrap.Modal(document.getElementById('productoModal'));
-		modal.show();
-	}
+	isEdit = !nuevo;
+
+	producto = datos
+		? {
+				id: datos.id,
+				name: datos.name,
+				price: datos.price,
+				quantity: datos.quantity,
+				expirationDate: datos.expirationDate,
+				category: datos.categoryChange // ← usamos el ID correcto aquí
+		  }
+		: {
+				id: null,
+				name: '',
+				price: '',
+				quantity: '',
+				expirationDate: '',
+				category: ''
+		  };
+
+	const modal = new bootstrap.Modal(document.getElementById('productoModal'));
+	modal.show();
+}
+
+
 
 	// guardar producto
 	async function guardarProducto() {
@@ -126,7 +137,7 @@
 			<select id="categoriaSeleccionada" bind:value={categoriaSeleccionada} class="form-select">
 				<option value="todas">Todas</option>
 				{#each categorias as categoria}
-					<option value={categoria}>{categoria}</option>
+					<option value={categoria.name}>{categoria.name}</option>
 				{/each}
 			</select>
 		</div>
@@ -222,7 +233,12 @@
 					</div>
 					<div class="mb-3">
 						<label class="form-label">Categoría</label>
-						<input class="form-control" type="text" bind:value={producto.category} required />
+						<select class="form-select" bind:value={producto.category} required>
+							<option value="" disabled>Selecciona una categoría</option>
+							{#each categorias as categoria}
+								<option value={categoria.id}>{categoria.name}</option>
+							{/each}
+						</select>
 					</div>
 					<div class="d-flex justify-content-end">
 						<button type="submit" class="btn btn-success">

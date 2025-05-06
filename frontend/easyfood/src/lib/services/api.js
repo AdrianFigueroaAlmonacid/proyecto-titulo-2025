@@ -282,9 +282,34 @@ export async function deleteProduct(id, token) {
 // log out
 export function logout() {
 	localStorage.removeItem('token');
-	// localStorage.removeItem('username');
-	// mensaje = 'Sesión cerrada correctamente';
-	
-	// Si usas routing (como SvelteKit), redirige:
 	window.location.href = '/';
 }
+
+
+// seleccionar categoria
+
+export const getCategory = async () => {
+	const token = localStorage.getItem('token');
+
+	try {
+		const response = await fetch(`${URL}category/all`, {
+			method: 'GET',
+			headers: {
+				'Authorization': `Bearer ${token.trim()}`
+			}
+		});
+
+		if (response.ok) {
+			const data = await response.json();
+            console.log(data)
+	        return data.object; 
+		} else {
+			console.log("Error al obtener categorias:", response.status);
+			return null;
+		}
+
+	} catch (err) {
+		console.log("Error de conexión:", err);
+		return null;
+	}
+};
