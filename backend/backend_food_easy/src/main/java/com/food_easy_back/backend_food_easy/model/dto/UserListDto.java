@@ -1,5 +1,7 @@
 package com.food_easy_back.backend_food_easy.model.dto;
 
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,4 +18,8 @@ public class UserListDto {
     private String name;
     private String position;
     private boolean admin;
+    private String email;
+    private String lastname;
+    private String username;
+    private LocalDate registerDate;
 }
