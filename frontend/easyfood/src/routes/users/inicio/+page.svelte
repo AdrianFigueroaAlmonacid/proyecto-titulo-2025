@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import {postLogin, lowStock, lowStockCount, expiringSoon, expiringSoonCount } from '$lib/services/api';
+	import { postLogin, lowStock, lowStockCount, expiringSoon, expiringSoonCount } from '$lib/services/api';
 
 	let productosPorVencer = [];
 	let productosStockBajo = [];
@@ -10,11 +10,17 @@
 	let mensaje = '';
 	let fechaHoy = '';
 	let nameUserAuth = localStorage.getItem('username') || '';
-	// console.log(localStorage.getItem('username'))
 
+	// Función para capitalizar cada palabra
+	function capitalizarCadaPalabra(texto) {
+		if (!texto) return '';
+		return texto
+			.toLowerCase()
+			.split(' ')
+			.map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1))
+			.join(' ');
+	}
 
-
-	// Mensaje de buenos días según la hora
 	const obtenerMensajeDeBienvenida = () => {
 		const hora = new Date().getHours();
 		if (hora < 12) {
@@ -26,7 +32,6 @@
 		}
 	};
 
-	// Obtener la fecha de hoy en formato dd-mm-yyyy
 	const obtenerFechaHoy = () => {
 		const hoy = new Date();
 		const dia = String(hoy.getDate()).padStart(2, '0');
@@ -44,52 +49,47 @@
 			cantidadStockBajo = productosStockCount;
 		}
 
-		// Llamada para obtener la cantidad de productos por vencer
 		const productosPorVencerCount = await expiringSoonCount();
 		if (productosPorVencerCount !== null) {
 			cantidadPorVencer = productosPorVencerCount;
 		}
 
-		// Productos con bajo stock
 		const productosStock = await lowStock();
 		if (productosStock?.object) {
 			productosStockBajo = productosStock.object.map((p) => ({
-				nombre: p.name,
+				nombre: capitalizarCadaPalabra(p.name),
 				cantidad: p.quantity
 			}));
 		}
 
-		// Productos por vencer
 		const productosVencimiento = await expiringSoon();
-if (productosVencimiento?.object) {
-	productosPorVencer = productosVencimiento.object
-		.filter(p => !!p.date)
-		.map(p => {
-			const fecha = new Date(p.date);
-			if (isNaN(fecha)) {
-				console.warn('Fecha inválida en producto:', p);
-				return null;
-			}
+		if (productosVencimiento?.object) {
+			productosPorVencer = productosVencimiento.object
+				.filter(p => !!p.date)
+				.map(p => {
+					const fecha = new Date(p.date);
+					if (isNaN(fecha)) {
+						console.warn('Fecha inválida en producto:', p);
+						return null;
+					}
+					const dia = String(fecha.getDate()).padStart(2, '0');
+					const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+					const año = fecha.getFullYear();
+					const fechaFormateada = `${dia}-${mes}-${año}`;
 
-			const dia = String(fecha.getDate()).padStart(2, '0');
-			const mes = String(fecha.getMonth() + 1).padStart(2, '0');
-			const año = fecha.getFullYear();
-			const fechaFormateada = `${dia}-${mes}-${año}`;
-
-			return {
-				nombre: p.name,
-				fechaVencimiento: fechaFormateada
-			};
-		})
-		.filter(Boolean);
-}
-
+					return {
+						nombre: capitalizarCadaPalabra(p.name),
+						fechaVencimiento: fechaFormateada
+					};
+				})
+				.filter(Boolean);
+		}
 	});
 </script>
 
 <div class="container mt-5 d-flex justify-content-center align-items-center row m-auto">
 	<div>
-		<h1>{mensaje} {nameUserAuth}</h1>
+		<h1 class="fw-bold">{mensaje} {nameUserAuth}</h1>
 		<h2>Este es el resumen de hoy <strong>{fechaHoy}</strong></h2>
 	</div>
 

@@ -7,6 +7,8 @@ let isAdmin = false;
 onMount(() => {
 		isAdmin = isAdminUser();
 	});
+	import { page } from '$app/stores';
+	$: currentPath = $page.url.pathname;
 </script>
 
 
@@ -27,20 +29,20 @@ onMount(() => {
 		<div class="collapse navbar-collapse" id="navbarNav">
 			<ul class="navbar-nav ms-auto gap-5">
 				<li class="nav-item">
-					<a class="nav-link" href="/users/inicio">Inicio</a>
+					<a class="nav-link {currentPath === '/users/inicio' ? 'active' : ''}  fw-bold" href="/users/inicio">Inicio</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="/users/productos">Productos</a>
+					<a class="nav-link {currentPath === '/users/productos' ? 'active' : ''} fw-bold" href="/users/productos">Productos</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="/users/venta">Venta</a>
+					<a class="nav-link {currentPath === '/users/venta' ? 'active' : ''} fw-bold" href="/users/venta">Venta</a>
 				</li>
 				<li class="nav-item  {isAdmin ? '' : 'd-none'} ">
-					<a class="nav-link" href="/users/manejarUsuarios">Manejo Usuarios</a>
+					<a class="nav-link {currentPath === '/users/manejarUsuarios' ? 'active' : ''} fw-bold" href="/users/manejarUsuarios">Manejo Usuarios</a>
 				</li>
 
 				<li>
-					<button type="button" class="btn btn-danger" on:click={logout}>
+					<button type="button" class="btn btn-danger fw-bold" on:click={logout}>
 						Cerrar sesión <i class="bi bi-box-arrow-in-left"></i>
 					</button>
 				</li>
@@ -63,4 +65,10 @@ onMount(() => {
 		font-size: 1.2rem;
 		color: white !important;
 	}
+
+	.nav-link.active {
+		margin-top: 0;
+	font-weight: bold;
+	border-bottom: 2px solid #fff;
+}
 </style>

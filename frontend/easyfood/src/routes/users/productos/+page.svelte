@@ -1,6 +1,5 @@
 <script>
 	import { onMount } from 'svelte';
-	// import { fade } from 'svelte/transition';
 	import { jsPDF } from 'jspdf';
 	import {
 		getProducts,
@@ -14,7 +13,8 @@
 
 	let productos = [];
 	let categorias = [];
-
+	let mensajeExito = '';
+	let tipoAlerta = ''; // 'success' o 'danger'
 	let producto = {
 		id: null,
 		name: '',
@@ -66,16 +66,35 @@
 	async function guardarProducto() {
 		const token = localStorage.getItem('token');
 
+		let resultado;
 		if (isEdit && producto.id) {
-			const ok = await updateProduct(producto, token);
-			if (ok) {
-				location.reload();
+			resultado = await updateProduct(producto, token);
+			if (resultado) {
+				mensajeExito = 'Producto editado correctamente';
+				tipoAlerta = 'success';
+			} else {
+				mensajeExito = 'Hubo un error al editar el producto';
+				tipoAlerta = 'danger';
 			}
 		} else {
-			const ok = await createProduct(producto, token);
-			if (ok) {
-				location.reload();
+			resultado = await createProduct(producto, token);
+			if (resultado) {
+				mensajeExito = 'Producto agregado correctamente';
+				tipoAlerta = 'success';
+			} else {
+				mensajeExito = 'Hubo un error al agregar el producto';
+				tipoAlerta = 'danger';
 			}
+		}
+
+		if (resultado) {
+			const modal = bootstrap.Modal.getInstance(document.getElementById('productoModal'));
+			modal.hide(); 
+			productos = await getProducts(); 
+
+			setTimeout(() => {
+				mensajeExito = '';
+			}, 2000); 
 		}
 	}
 
@@ -83,15 +102,12 @@
 		const token = localStorage.getItem('token');
 		const resultado = await deleteProduct(id, token);
 		if (resultado) {
-			const actualizado = await getProducts();
-			if (actualizado) {
-				productos = actualizado;
-			}
+			productos = await getProducts();
 		}
 	}
 
 	async function generarInforme() {
-		const productosVendidos = await sellMonth(); // Llamar a tu servicio
+		const productosVendidos = await sellMonth();
 
 		if (!productosVendidos || productosVendidos.length === 0) {
 			console.log('No hay productos vendidos este mes.');
@@ -119,7 +135,6 @@
 		doc.text('INFORME DE PRODUCTOS VENDIDOS ESTE MES', 20, 10);
 
 		productosResumen.forEach((p, index) => {
-			
 			if (index > 0 && index % productosPorPagina === 0) {
 				doc.addPage();
 				baseY = 20;
@@ -144,12 +159,15 @@
 		const anio = date.getFullYear();
 		return `${dia}/${mes}/${anio}`;
 	}
+
+	function capitalizarPrimeraLetra(texto) {
+		if (!texto) return '';
+		return texto.charAt(0).toUpperCase() + texto.slice(1).toLowerCase();
+	}
 </script>
 
-<!-- HTML -->
 <div class="container row d-flex justify-content-center text-center" style="max-width: 1200px; margin:50px auto;">
 	<div class="text-center"><h1>Administración de Productos</h1></div>
-
 	<div class="d-flex justify-content-between align-items-center mb-3">
 		<div>
 			<label for="categoriaSeleccionada" class="me-2">Filtrar por categoría:</label>
@@ -184,8 +202,8 @@
 			<tbody>
 				{#each productosFiltrados as p}
 					<tr>
-						<td>{p.category}</td>
-						<td>{p.name}</td>
+						<td>{capitalizarPrimeraLetra(p.category)}</td>
+						<td>{capitalizarPrimeraLetra(p.name)}</td>
 						<td>${p.price}</td>
 						<td>{p.quantity}</td>
 						<td>{formatearFecha(p.expirationDate)}</td>
@@ -219,12 +237,17 @@
 			</div>
 		{/if}
 	</div>
+	{#if mensajeExito}
+	<div class={` mt-3 alert alert-${tipoAlerta} alert-dismissible fade show`} role="alert">
+		{mensajeExito}
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+{/if}
 </div>
 
-<!-- Modal -->
 <div class="modal fade" id="productoModal" tabindex="-1" aria-labelledby="productoModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
-		<div class="modal-content" >
+		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="productoModalLabel">
 					{isEdit ? 'Editar Producto' : 'Agregar Producto'}
@@ -268,3 +291,5 @@
 		</div>
 	</div>
 </div>
+
+

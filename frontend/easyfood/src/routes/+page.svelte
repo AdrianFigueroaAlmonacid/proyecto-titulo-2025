@@ -38,7 +38,7 @@
 				<form on:submit|preventDefault={() => handleLogin(username, password)}>
 					<div class="mb-3">
 						<label for="username" class="form-label">Usuario</label>
-						<input type="text" id="username" class="form-control" bind:value={username} required />
+						<input type="text" id="username" class="form-control " bind:value={username} required />
 					</div>
 					<div class="mb-3">
 						<label for="password" class="form-label">Contraseña</label>
@@ -50,7 +50,7 @@
 							required
 						/>
 					</div>
-					<button type="submit" class="btn btn-primary w-100"> <strong>Iniciar</strong> </button>
+					<button type="submit" class="btn btn-primary w-100"> <strong>Ingresar</strong> </button>
 				</form>
 				{#if error}
 					<div class="alert alert-danger mt-3" role="alert">
