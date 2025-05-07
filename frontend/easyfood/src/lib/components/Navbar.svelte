@@ -2,8 +2,13 @@
 <script>
 import { onMount } from 'svelte';
 import { fade } from 'svelte/transition';
-import { logout } from '$lib/services/api';
+import { logout, isAdminUser } from '$lib/services/api';
+let isAdmin = false;
+onMount(() => {
+		isAdmin = isAdminUser();
+	});
 </script>
+
 
 <nav class="navbar navbar-expand-lg">
 	<div class="container-fluid">
@@ -30,7 +35,7 @@ import { logout } from '$lib/services/api';
 				<li class="nav-item">
 					<a class="nav-link" href="/users/venta">Venta</a>
 				</li>
-				<li class="nav-item">
+				<li class="nav-item  {isAdmin ? '' : 'd-none'} ">
 					<a class="nav-link" href="/users/manejarUsuarios">Manejo Usuarios</a>
 				</li>
 

@@ -1,7 +1,9 @@
 <script>
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import { getUsers,deleteUser,updateUser,createUser,updatePassword } from '$lib/services/api';
+	import { getUsers,deleteUser,updateUser,createUser,updatePassword, isAdminUser } from '$lib/services/api';
+	let isAdmin = isAdminUser();
+
 
 	let usuarios = [
 	];

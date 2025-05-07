@@ -17,6 +17,8 @@ export const postLogin = async (username, password) => {
 			KEY = response.headers.get('Authorization');
 			localStorage.setItem('token', KEY);
             localStorage.setItem('username', username);
+            // localStorage.setItem('roles', JSON.stringify(user.roles));
+            // console.log(localStorage.setItem('roles', JSON.stringify(user.roles)))
 
 			return response;
          
@@ -450,3 +452,26 @@ export async function updatePassword(user) {
 		return false;
 	}
 }
+
+
+// filtro admin
+
+export function isAdminUser() {
+	const token = localStorage.getItem('token');
+	if (!token) return false;
+
+	try {
+		const payload = token.split('.')[1];
+		const decodedPayload = JSON.parse(atob(payload));
+		const roles = decodedPayload.roles || [];
+
+		console.log('Roles:', roles);
+		return roles.includes('ADMIN') || roles.includes('OWNER');
+	} catch (err) {
+		console.error('Error al decodificar JWT', err);
+		return false;
+	}
+}
+
+
+

@@ -65,8 +65,9 @@
 <style>
 .inicio{
 	background-image: url("/img/fondo-easyfood.png");
-	/* background-position: left bottom; */
+	background-position: center;
 	background-repeat: no-repeat;
+	background-size: cover;
 }
 
 

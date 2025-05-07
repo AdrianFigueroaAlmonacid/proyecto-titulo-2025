@@ -6,7 +6,9 @@
 		getProducts,
 		updateProduct,
 		deleteProduct,
-		createProduct, getCategory
+		createProduct,
+		getCategory,
+		isAdminUser
 	} from '$lib/services/api';
 
 	let productos = [];
@@ -23,68 +25,59 @@
 
 	let isEdit = false;
 	let categoriaSeleccionada = 'todas';
+	let esAdmin = false;
 
 	$: productosFiltrados = productos.filter(
-	(p) => categoriaSeleccionada === 'todas' || p.category === categoriaSeleccionada);
+		(p) => categoriaSeleccionada === 'todas' || p.category === categoriaSeleccionada
+	);
 
 	onMount(async () => {
-		productos = await getProducts();;
-
+		productos = await getProducts();
 		categorias = await getCategory();
-
+		esAdmin = isAdminUser();
 	});
+
 	function abrirModal(nuevo = true, datos = null) {
-	isEdit = !nuevo;
+		isEdit = !nuevo;
 
-	producto = datos
-		? {
-				id: datos.id,
-				name: datos.name,
-				price: datos.price,
-				quantity: datos.quantity,
-				expirationDate: datos.expirationDate,
-				category: datos.categoryChange // ← usamos el ID correcto aquí
-		  }
-		: {
-				id: null,
-				name: '',
-				price: '',
-				quantity: '',
-				expirationDate: '',
-				category: ''
-		  };
+		producto = datos
+			? {
+					id: datos.id,
+					name: datos.name,
+					price: datos.price,
+					quantity: datos.quantity,
+					expirationDate: datos.expirationDate,
+					category: datos.categoryChange
+			  }
+			: {
+					id: null,
+					name: '',
+					price: '',
+					quantity: '',
+					expirationDate: '',
+					category: ''
+			  };
 
-	const modal = new bootstrap.Modal(document.getElementById('productoModal'));
-	modal.show();
-}
+		const modal = new bootstrap.Modal(document.getElementById('productoModal'));
+		modal.show();
+	}
 
-
-
-	// guardar producto
 	async function guardarProducto() {
 		const token = localStorage.getItem('token');
 
 		if (isEdit && producto.id) {
 			const ok = await updateProduct(producto, token);
-			console.log(producto, 'Producto');
 			if (ok) {
-				console.log(producto, 'Producto actualizado');
 				location.reload();
-			} else {
-				console.log('Error al actualizar producto');
 			}
 		} else {
 			const ok = await createProduct(producto, token);
 			if (ok) {
-				console.log('Producto creado');
 				location.reload();
-			} else {
-				console.log('Error al crear producto');
 			}
 		}
 	}
 
-	// Eliminar producto
 	async function eliminarProducto(id) {
 		const token = localStorage.getItem('token');
 		const resultado = await deleteProduct(id, token);
@@ -125,10 +118,7 @@
 </script>
 
 <!-- HTML -->
-<div
-	class="container row d-flex justify-content-center text-center"
-	style="max-width: 1200px; margin:50px auto;"
->
+<div class="container row d-flex justify-content-center text-center" style="max-width: 1200px; margin:50px auto;">
 	<div class="text-center"><h1>Administración de Productos</h1></div>
 
 	<div class="d-flex justify-content-between align-items-center mb-3">
@@ -157,7 +147,9 @@
 					<th>Precio Venta</th>
 					<th>Stock</th>
 					<th>Fecha Vencimiento</th>
-					<th>Acciones</th>
+					{#if esAdmin}
+						<th>Acciones</th>
+					{/if}
 				</tr>
 			</thead>
 			<tbody>
@@ -168,50 +160,47 @@
 						<td>${p.price}</td>
 						<td>{p.quantity}</td>
 						<td>{formatearFecha(p.expirationDate)}</td>
-						<td>
-							<div class="d-flex justify-content-center g-5">
-								<button class="btn btn-sm btn-warning me-2" on:click={() => abrirModal(false, p)}>
-									<i class="bi bi-pencil-square"></i> Editar
-								</button>
-								<button class="btn btn-sm btn-danger" on:click={() => eliminarProducto(p.id)}>
-									<i class="bi bi-trash"></i> Eliminar
-								</button>
-							</div>
-						</td>
+						{#if esAdmin}
+							<td>
+								<div class="d-flex justify-content-center g-5">
+									<button class="btn btn-sm btn-warning me-2" on:click={() => abrirModal(false, p)}>
+										<i class="bi bi-pencil-square"></i> Editar
+									</button>
+									<button class="btn btn-sm btn-danger" on:click={() => eliminarProducto(p.id)}>
+										<i class="bi bi-trash"></i> Eliminar
+									</button>
+								</div>
+							</td>
+						{/if}
 					</tr>
 				{/each}
 				{#if productos.length === 0}
 					<tr>
-						<td colspan="7" class="text-center">No hay productos</td>
+						<td colspan={esAdmin ? 6 : 5} class="text-center">No hay productos</td>
 					</tr>
 				{/if}
 			</tbody>
 		</table>
 
-		<div class="d-flex justify-content-end">
-			<button class="btn btn-primary" on:click={() => abrirModal(true)}>
-				<i class="bi bi-plus-circle"></i> Agregar Producto
-			</button>
-		</div>
+		{#if esAdmin}
+			<div class="d-flex justify-content-end">
+				<button class="btn btn-primary" on:click={() => abrirModal(true)}>
+					<i class="bi bi-plus-circle"></i> Agregar Producto
+				</button>
+			</div>
+		{/if}
 	</div>
 </div>
 
 <!-- Modal -->
-<div
-	class="modal fade"
-	id="productoModal"
-	tabindex="-1"
-	aria-labelledby="productoModalLabel"
-	aria-hidden="true"
->
+<div class="modal fade" id="productoModal" tabindex="-1" aria-labelledby="productoModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content" transition:fade>
 			<div class="modal-header">
 				<h5 class="modal-title" id="productoModalLabel">
 					{isEdit ? 'Editar Producto' : 'Agregar Producto'}
 				</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"
-				></button>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
 			</div>
 			<div class="modal-body">
 				<form on:submit|preventDefault={guardarProducto}>
