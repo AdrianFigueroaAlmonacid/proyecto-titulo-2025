@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import { fade } from 'svelte/transition';
+	// import { fade } from 'svelte/transition';
 	import { jsPDF } from 'jspdf';
 	import {
 		getProducts,
@@ -195,7 +195,7 @@
 <!-- Modal -->
 <div class="modal fade" id="productoModal" tabindex="-1" aria-labelledby="productoModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
-		<div class="modal-content" transition:fade>
+		<div class="modal-content" >
 			<div class="modal-header">
 				<h5 class="modal-title" id="productoModalLabel">
 					{isEdit ? 'Editar Producto' : 'Agregar Producto'}
