@@ -1,36 +1,39 @@
 <script>
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
+	import { getUsers,deleteUser,updateUser,createUser,updatePassword } from '$lib/services/api';
 
 	let usuarios = [
-		{ fecha: '2025-01-01', nombre: 'Juan', admin: true, rol: 'Administrador' },
-		{ fecha: '2025-01-02', nombre: 'Ana', admin: false, rol: 'Vendedor' },
-		{ fecha: '2025-01-03', nombre: 'Luis', admin: true, rol: 'Supervisor' }
 	];
 
 	let nuevoNombre = '';
-	let nuevoAdmin = false;
-	let nuevoRol = '';
-	let nuevaFecha = '';
+	let nuevoEmail = '';
+	let nuevoId = 0;
+	let nuevoUsername = '';
+	let nuevoLastname = '';
+	let nuevoPassword = '';
+
+
 
 	let editandoIndex = -1;
 	let modal;
 	let mensaje = '';
 	let mostrarMensaje = false;
 
-	function abrirModal(editar = false, index = -1) {
-		if (editar && index !== -1) {
-			const usuario = usuarios[index];
+	function abrirModal(editar = false, usuario = null) {
+		if (editar && usuario !== null) {
 			nuevoNombre = usuario.nombre;
-			nuevoAdmin = usuario.admin;
-			nuevoRol = usuario.rol;
-			nuevaFecha = usuario.fecha;
-			editandoIndex = index;
+			nuevoEmail = usuario.email;
+			nuevoId = usuario.iduser;
+			nuevoUsername = usuario.username;
+			nuevoLastname = usuario.lastname;
+			editandoIndex = 1;
 		} else {
 			nuevoNombre = '';
-			nuevoAdmin = false;
-			nuevoRol = '';
-			nuevaFecha = '';
+			nuevoEmail = '';
+			nuevoUsername = '';
+			nuevoLastname = '';
+			nuevoPassword = '';
 			editandoIndex = -1;
 		}
 
@@ -38,34 +41,110 @@
 		modalInstance.show();
 	}
 
-	function guardarUsuario() {
-		const datos = {
-			fecha: nuevaFecha,
-			nombre: nuevoNombre,
-			admin: nuevoAdmin,
-			rol: nuevoRol
-		};
+	async function guardarUsuario() {
 
 		if (editandoIndex === -1) {
-			usuarios = [...usuarios, datos];
-			mostrarAlerta('Usuario agregado con éxito ✅');
+			const datos = {
+			name: nuevoNombre,
+			email: nuevoEmail,
+			username: nuevoUsername,
+			lastname: nuevoLastname,
+			password: nuevoPassword,
+			roles: [
+				"USER"
+			]		
+			};
+
+			const actualizacion = await createUser(datos);
+			if(actualizacion){
+				mostrarAlerta('Usuario agregado con éxito ✅');
+			}else{
+				mostrarAlerta('Error al agregar usuario');
+			}
 		} else {
-			usuarios[editandoIndex] = datos;
-			usuarios = [...usuarios];
-			mostrarAlerta('Usuario editado correctamente ✏️');
+			const datos = {
+				name: nuevoNombre,
+				email: nuevoEmail,
+				id: nuevoId,
+				username: nuevoUsername,
+				lastName: nuevoLastname
+			
+			};
+			const datosPassword = {
+				id: nuevoId,
+				username: nuevoUsername,
+				password:nuevoPassword
+			
+			};
+
+			let actualizacionPassword = false;
+			if(datosPassword.password !== ''){
+				actualizacionPassword = await updatePassword(datosPassword);
+			}
+
+			const actualizacion = await updateUser(datos);
+
+			if(actualizacion){
+				if(actualizacionPassword){
+					mostrarAlerta('Usuario y password asociada editado con éxito ✅');
+				}else{
+					mostrarAlerta('Usuario editado con éxito ✅');
+				}
+			}else{
+				mostrarAlerta('Error al editar usuario');
+			}
 		}
+		async function cargarUsuarios() {
+			const data = await getUsers();
+			if (data) {
+					usuarios = data.map(user => ({
+						fecha: user.registerDate,
+						nombre: user.name,
+						admin: user.admin,
+						rol: user.position,
+						email: user.email,
+						lastname: user.lastname,
+						username: user.username,
+						iduser: user.idUser
+					}));
+				}
+			}
+
+			cargarUsuarios();
 
 		editandoIndex = -1;
 		nuevoNombre = '';
-		nuevoAdmin = false;
-		nuevoRol = '';
-		nuevaFecha = '';
+		nuevoEmail = '';
+		nuevoId = 0;
+		nuevoUsername = '';
+		nuevoLastname = '';
+		nuevoPassword = '';
 	}
 
-	function eliminarUsuario(index) {
-		usuarios.splice(index, 1);
-		usuarios = [...usuarios];
-		mostrarAlerta('Usuario eliminado 🗑️');
+	async function eliminarUsuario(usuario) {
+		const actualizacion = await deleteUser(usuario.iduser);
+		if(actualizacion){
+				mostrarAlerta('Usuario eliminado 🗑️');
+			}else{
+				mostrarAlerta('Error al eliminar usuario');
+			}
+		async function cargarUsuarios() {
+		const data = await getUsers();
+		if (data) {
+				usuarios = data.map(user => ({
+					fecha: user.registerDate,
+					nombre: user.name,
+					admin: user.admin,
+					rol: user.position,
+					email: user.email,
+					lastname: user.lastname,
+					username: user.username,
+					iduser: user.idUser
+				}));
+			}
+		}
+
+		cargarUsuarios();
 	}
 
 	function mostrarAlerta(texto) {
@@ -80,15 +159,26 @@
 		if (!window.bootstrap) {
 			console.error('Bootstrap JS no está cargado.');
 		}
-	});
-</script>
+		async function cargarUsuarios() {
+			const data = await getUsers();
+			if (data) {
+					usuarios = data.map(user => ({
+						fecha: user.registerDate,
+						nombre: user.name,
+						admin: user.admin,
+						rol: user.position,
+						email: user.email,
+						lastname: user.lastname,
+						username: user.username,
+						iduser: user.idUser
+					}));
+					console.log(usuarios);
+				}
+			}
 
-<!-- ALERTA -->
-{#if mostrarMensaje}
-	<div class="alert alert-success mt-3" role="alert">
-		{mensaje}
-	</div>
-{/if}
+			cargarUsuarios();
+		});
+</script>
 
 <!-- TABLA DE USUARIOS -->
 <div style="max-width: 1200px; margin:auto;" class="p-5 d-grid gap-4">
@@ -98,18 +188,24 @@
 		<table class="table table-bordered table-hover text-center">
 			<thead class="table-light">
 				<tr>
-					<th>Fecha</th>
+					<th>Fecha de ingreso</th>
+					<th>Username</th>
 					<th>Nombre</th>
+					<th>Apellido</th>
+					<th>Email</th>
 					<th>Rol</th>
 					<th>Admin</th>
 					<th>Acciones</th>
 				</tr>
 			</thead>
 			<tbody>
-				{#each usuarios as usuario, i}
+				{#each usuarios as usuario}
 					<tr>
 						<td>{usuario.fecha}</td>
+						<td>{usuario.username}</td>
 						<td>{usuario.nombre}</td>
+						<td>{usuario.lastname}</td>
+						<td>{usuario.email}</td>
 						<td>{usuario.rol}</td>
 						<td>
 							{#if usuario.admin}
@@ -120,10 +216,10 @@
 						</td>
 						<td>
 							<div class="d-flex justify-content-center g-5">
-								<button class="btn btn-warning me-2" on:click={() => abrirModal(true, i)}>
+								<button class="btn btn-warning me-2" on:click={() => abrirModal(true, usuario)} disabled={usuario.admin}>
 									<i class="bi bi-pencil-square"></i> Editar</button
 								>
-								<button class="btn btn-sm btn-danger" on:click={() => eliminarUsuario(i)}>
+								<button class="btn btn-sm btn-danger" on:click={() => eliminarUsuario(usuario)} disabled={usuario.admin}>
 									<i class="bi bi-trash"></i> Eliminar</button
 								>
 							</div>
@@ -132,6 +228,12 @@
 				{/each}
 			</tbody>
 		</table>
+				<!-- ALERTA -->
+		{#if mostrarMensaje}
+			<div class="alert alert-success mt-3" role="alert">
+				{mensaje}
+			</div>
+		{/if}
 	</div>
 
 	<!-- BOTÓN AGREGAR -->
@@ -152,29 +254,60 @@
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"
 					></button>
 				</div>
-				<div class="modal-body">
-					<div class="mb-3">
-						<label class="form-label">Fecha</label>
-						<input type="date" class="form-control" bind:value={nuevaFecha} required />
+				{#if editandoIndex === -1}
+					<div class="modal-body">
+						<div class="mb-3">
+							<label class="form-label">Username</label>
+							<input type="text" class="form-control" bind:value={nuevoUsername} required />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Nombre</label>
+							<input type="text" class="form-control" bind:value={nuevoNombre} required />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Apellido</label>
+							<input type="text" class="form-control" bind:value={nuevoLastname} required />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Email</label>
+							<input type="text" class="form-control" bind:value={nuevoEmail} required />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Password</label>
+							<input type="text" class="form-control" bind:value={nuevoPassword} required />
+						</div>
 					</div>
-					<div class="mb-3">
-						<label class="form-label">Nombre</label>
-						<input type="text" class="form-control" bind:value={nuevoNombre} required />
+
+				{/if}
+				{#if editandoIndex !== -1}
+						<div class="modal-body">
+							<div class="mb-3">
+								<label class="form-label">Id</label>
+							<div class="readonly-box">{nuevoId}</div>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Username</label>
+							<div class="readonly-box">{nuevoUsername}</div>
+						</div>
+											<div class="mb-3">
+							<label class="form-label">Nombre</label>
+							<input type="text" class="form-control" bind:value={nuevoNombre} required />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Apellido</label>
+							<input type="text" class="form-control" bind:value={nuevoLastname} required />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Email</label>
+							<input type="text" class="form-control" bind:value={nuevoEmail} required />
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Password</label>
+							<input type="text" class="form-control" bind:value={nuevoPassword} />
+						</div>
 					</div>
-					<div class="mb-3">
-						<label class="form-label">Rol</label>
-						<input type="text" class="form-control" bind:value={nuevoRol} required />
-					</div>
-					<div class="form-check">
-						<input
-							class="form-check-input"
-							type="checkbox"
-							bind:checked={nuevoAdmin}
-							id="adminCheck"
-						/>
-						<label class="form-check-label" for="adminCheck">¿Permiso Admin?</label>
-					</div>
-				</div>
+				{/if}
+			
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
 					<button type="submit" class="btn btn-success" data-bs-dismiss="modal">
@@ -185,3 +318,13 @@
 		</div>
 	</div>
 </div>
+<style>
+    .readonly-box {
+        border: 1px solid #ced4da;
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.25rem;
+        background-color: #e9ecef;
+        user-select: none;
+        color: #495057;
+    }
+</style>

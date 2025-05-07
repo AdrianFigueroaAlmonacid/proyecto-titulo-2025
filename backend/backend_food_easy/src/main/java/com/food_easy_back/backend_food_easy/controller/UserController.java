@@ -94,6 +94,10 @@ public class UserController {
                                         .name(u.getName())
                                         .position(userService.setPrivileges(u.getRoles()))
                                         .admin(userService.setPrivileges(u.getRoles())=="ADMIN" ||userService.setPrivileges(u.getRoles())=="OWNER" ? true: false)
+                                        .email(u.getEmail())
+                                        .username(u.getUsername())
+                                        .lastname(u.getLastName())
+                                        .registerDate(u.getRegisterDate())
                                         .build());
         ResponseMessage response = ResponseMessage.builder()
                                 .message("Usuarios recuperados correctamente")
