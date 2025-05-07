@@ -14,7 +14,7 @@
 	let productos = [];
 	let categorias = [];
 	let mensajeExito = '';
-	let tipoAlerta = ''; // 'success' o 'danger'
+	let tipoAlerta = ''; 
 	let producto = {
 		id: null,
 		name: '',
@@ -178,11 +178,13 @@
 				{/each}
 			</select>
 		</div>
+		{#if esAdmin}
 		<div>
 			<button class="btn btn-success me-2" on:click={generarInforme}>
 				<i class="bi bi-archive"></i> Generar Informe
 			</button>
 		</div>
+		{/if}
 	</div>
 
 	<div class="table-responsive">
