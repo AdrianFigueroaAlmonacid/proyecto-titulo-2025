@@ -113,10 +113,7 @@ Hibernate: proveedor ORM que gestiona la conversión entre entidades Java y tabl
 Datasource configurado en application.properties: define los parámetros de conexión (URL, usuario, contraseña, dialecto).
 
 
-5. Testing
-
-
-6. Seguridad
+5. Seguridad
 
 
 En el proyecto se implementaron varias medidas de seguridad clave para proteger tanto los datos como el acceso a la aplicación:
@@ -139,7 +136,7 @@ Implementación de JWT (JSON Web Tokens) para la autenticación sin estado (stat
 Los tokens se generan tras un login exitoso y se usan para autenticar las solicitudes subsecuentes, reduciendo la exposición de credenciales sensibles.
 
 
-7. Proceso de despliegue (manual)
+6. Proceso de despliegue (manual)
 
 
 1️⃣ Preparar Docker Compose para entorno local
@@ -167,14 +164,9 @@ Para verificar el contenedor:
 docker ps
 
 
-4️⃣Poblar la base de datos con el administrador del sistema y agregar un negocio
+2️⃣ Poblar la base de datos con el administrador del sistema y agregar un negocio
 
 docker exec -it mysql_db mysql -u root -p
-
-Password del usuario: password123
-
-Para generar otra password ingresar a https://bcrypt-generator.com/ y generar el hash de la contraseña.
-
 
 INSERT INTO user (disabled, id_users, locked, register_date, store_id_store, password, email, last_name, name, username)
 VALUES (0, 1, 0, NOW(), NULL, '$2a$12$t2IZfR70Jv4Ws7sUatJbdeyj.hXJ13ZARZU4pcZvzzZPVO46u0IA2', 'usuario@example.com', 'Apellido', 'Nombre', 'usuario');
@@ -185,6 +177,10 @@ VALUES
 (NOW(), 'OWNER', 'usuario'),
 (NOW(), 'ADMIN', 'usuario'),
 (NOW(), 'USER', 'usuario');
+
+Password del usuario: password123
+
+Para generar otra password ingresar a https://bcrypt-generator.com/ y generar el hash de la contraseña.
 
 Después el usuario administrador del sistema puede autenticarse en http://localhost:8081/api/v1/auth
 
@@ -206,13 +202,13 @@ y posteriormente llamar al endpoint para crear un negocio con su dueño y creden
 
 
 
-2️⃣ Pruebas locales
+3️⃣ Pruebas locales
 
 Accede a las URLs locales (ej. localhost:5173 para frontend, localhost:8081 para backend).
 Verifica conexión a MySQL (el contenedor debe estar corriendo y accesible).
 
 
-3️⃣ Despliegue en Render (backend y frontend)
+4️⃣Despliegue en Render (backend y frontend)
 
 
 Como Render no permite docker-compose directamente, deberás:
@@ -248,22 +244,21 @@ Render	Despliegue en la nube (sin Compose, usando servicios web independientes y
 MySQL (externo)	Base de datos en la nube (Render Database, PlanetScale, AWS RDS, etc.).
 
 
-8. Guía de Instalación
+7. Guía de Instalación
 
 
 Consulta la [Guía de Instalación del backend](./backend/backend_food_easy/README.md) para más detalles.
 
 
-9. Uso del Proyecto
+8. Uso del Proyecto
 
 
 Flujo de uso de la aplicación (registro, login, navegación).
 
 Ejemplos visuales o capturas de pantalla.
 
-10. Consideraciones Finales
+9. Consideraciones Finales
 
 Retos encontrados.
 
 Posibles mejoras futuras.
-

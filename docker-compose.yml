@@ -7,16 +7,16 @@ services:
       dockerfile: Dockerfile
     container_name: backend_food_easy
     ports:
-      - "8081:8081"  
+      - "8081:8081"
     depends_on:
       - mysql
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql_db:3306/food_easy
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/food_easy
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=12345
     networks:
       - app-network
-    command: ["/usr/local/bin/wait-for-it", "mysql:3306","--timeout=70" ,"--", "java", "-jar", "java-app.jar"]
+    command: ["sh", "-c", "sleep 10 && java -jar java-app.jar"]
 
   frontend:
     build:
@@ -40,7 +40,7 @@ services:
     ports:
       - "3307:3306"
     volumes:
-      - mysql-data:/var/lib/mysql  
+      - mysql-data:/var/lib/mysql
     networks:
       - app-network
 
