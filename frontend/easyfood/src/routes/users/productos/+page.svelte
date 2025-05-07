@@ -8,7 +8,8 @@
 		deleteProduct,
 		createProduct,
 		getCategory,
-		isAdminUser
+		isAdminUser,
+		sellMonth
 	} from '$lib/services/api';
 
 	let productos = [];
@@ -89,22 +90,50 @@
 		}
 	}
 
-	function generarInforme() {
-		const doc = new jsPDF();
-		doc.text('INFORME DE PRODUCTOS', 20, 10);
-		doc.text('\n', 20, 20);
+	async function generarInforme() {
+		const productosVendidos = await sellMonth(); // Llamar a tu servicio
 
-		productosFiltrados.forEach((p, index) => {
-			doc.text(`Producto ${index + 1}:`, 20, 30 + index * 10);
-			doc.text(`Categoría: ${p.category}`, 20, 35 + index * 10);
-			doc.text(`Nombre: ${p.name}`, 20, 40 + index * 10);
-			doc.text(`Stock: ${p.quantity}`, 20, 45 + index * 10);
-			doc.text(`Fecha de Vencimiento: ${formatearFecha(p.expirationDate)}`, 20, 50 + index * 10);
-			doc.text(`Precio de Venta: $${p.price}`, 20, 60 + index * 10);
-			doc.text('\n', 20, 65 + index * 10);
+		if (!productosVendidos || productosVendidos.length === 0) {
+			console.log('No hay productos vendidos este mes.');
+			return;
+		}
+
+		const productosAgrupados = {};
+		productosVendidos.forEach(p => {
+			if (productosAgrupados[p.nameProduct]) {
+				productosAgrupados[p.nameProduct] += p.quantity;
+			} else {
+				productosAgrupados[p.nameProduct] = p.quantity;
+			}
 		});
 
-		doc.save('informe_productos.pdf');
+		const productosResumen = Object.entries(productosAgrupados).map(([nombre, cantidad]) => ({
+			nameProduct: nombre,
+			quantity: cantidad
+		}));
+
+		const doc = new jsPDF();
+		let baseY = 20;
+		let productosPorPagina = 5; 
+
+		doc.text('INFORME DE PRODUCTOS VENDIDOS ESTE MES', 20, 10);
+
+		productosResumen.forEach((p, index) => {
+			
+			if (index > 0 && index % productosPorPagina === 0) {
+				doc.addPage();
+				baseY = 20;
+				doc.text('INFORME DE PRODUCTOS VENDIDOS ESTE MES', 20, 10);
+			}
+
+			doc.text(`Producto ${index + 1}:`, 20, baseY);
+			doc.text(`Nombre: ${p.nameProduct}`, 20, baseY + 10);
+			doc.text(`Cantidad Total Vendida: ${p.quantity}`, 20, baseY + 20);
+
+			baseY += 40; 
+		});
+
+		doc.save('informe_productos_vendidos.pdf');
 	}
 
 	function formatearFecha(fecha) {

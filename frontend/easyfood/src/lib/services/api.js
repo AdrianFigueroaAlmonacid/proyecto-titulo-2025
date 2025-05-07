@@ -473,5 +473,34 @@ export function isAdminUser() {
 	}
 }
 
+// llamada a ventas del mes
+export const sellMonth = async () => {
+    const token = localStorage.getItem('token'); 
+
+    try {
+       
+        const response = await fetch(`${URL}product/sale/all`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token.trim()}`
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json(); 
+            console.log(data, "productos vendidos este mes");
+            return data.object;
+        } else {
+            console.log("Error en productos vendidos este mes:", response.status);
+            return null;
+        }
+
+    } catch (err) {
+        console.log("Error de conexión:", err);
+        return null;
+    }
+};
+
 
 
