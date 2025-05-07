@@ -313,3 +313,140 @@ export const getCategory = async () => {
 		return null;
 	}
 };
+
+// traer usuarios
+export const getUsers = async () => {
+    const token = localStorage.getItem('token'); 
+
+    try {
+       
+        const response = await fetch(`${URL}user/store`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token.trim()}`
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json(); 
+            console.log("Usuarios obtenidos con exito");
+            return data.object.content;
+        } else {
+            console.log("Error al traer usuarios:", response.status);
+            return null;
+        }
+
+    } catch (err) {
+        console.log("Error de conexión:", err);
+        return null;
+    }
+};
+// actualizar usuario
+export async function updateUser(usuario) {
+    const token = localStorage.getItem('token'); 
+
+    try {
+        const response = await fetch(`${URL}user`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token.trim()}`
+            },
+            body: JSON.stringify(usuario)
+        });
+
+        if (response.ok) {
+            console.log("usuario actualizado correctamente");
+            return true;
+        } else {
+            console.log("Error al actualizar usuario:", response.status);
+            const errorText = await response.text();
+            console.log("Respuesta del servidor:", errorText);
+            return false;
+        }
+    } catch (error) {
+        console.error('Error al actualizar usuario:', error);
+        return false;
+    }
+}
+
+// borrar producto
+export async function deleteUser(id) {
+    const token = localStorage.getItem('token'); 
+	try {
+		const response = await fetch(`${URL}user/${id}`, {
+			method: 'DELETE',  
+			headers: {
+				'Authorization': `Bearer ${token.trim()}`
+			}
+		});
+
+		if (response.ok) {
+			console.log("Usuario eliminado correctamente");
+			return true;
+		} else {
+			console.log("Error al eliminar usuario:", response.status);
+			return false;
+		}
+	} catch (error) {
+		console.error('Error al eliminar producto:', error);
+		return false;
+	}
+}
+
+// add usuario
+
+export async function createUser(user) {
+    const token = localStorage.getItem('token'); 
+	try {
+		const response = await fetch(`${URL}user`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token.trim()}`
+			},
+			body: JSON.stringify(user)
+		});
+
+		if (response.ok) {
+			console.log("Usuario creado correctamente");
+			return true;
+		} else {
+			console.log("Error al crear usuario:", response.status);
+			const errorText = await response.text();
+			console.log("Respuesta del servidor:", errorText);
+			return false;
+		}
+	} catch (error) {
+		console.error('Error al crear usuario:', error);
+		return false;
+	}
+}
+
+export async function updatePassword(user) {
+    const token = localStorage.getItem('token'); 
+	try {
+		const response = await fetch(`${URL}user/password`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token.trim()}`
+			},
+			body: JSON.stringify(user)
+		});
+
+		if (response.ok) {
+			console.log("Password cambiada correctamente");
+			return true;
+		} else {
+			console.log("Error al cambiar password:", response.status);
+			const errorText = await response.text();
+			console.log("Respuesta del servidor:", errorText);
+			return false;
+		}
+	} catch (error) {
+		console.error('Error al modificar password:', error);
+		return false;
+	}
+}
