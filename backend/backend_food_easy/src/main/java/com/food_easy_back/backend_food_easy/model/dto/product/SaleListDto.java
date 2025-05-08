@@ -16,6 +16,7 @@ import lombok.ToString;
 public class SaleListDto {
 
     private String nameProduct;
+    private Double price;
     private Integer quantity;
     private LocalDate saleDate;
 

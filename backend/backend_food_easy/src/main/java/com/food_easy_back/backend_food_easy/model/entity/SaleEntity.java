@@ -33,6 +33,9 @@ public class SaleEntity {
     @Column(nullable = false)
     private Integer quantity;
 
+    @Column(nullable = false)
+    private Double price;
+
     @Column(name = "sale_date", updatable = false)
     private LocalDate saleDate;
 

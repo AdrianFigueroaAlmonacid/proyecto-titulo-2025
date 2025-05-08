@@ -16,7 +16,7 @@ public interface SaleDao extends CrudRepository<SaleEntity, Long> {
 
 
 
-    @Query("SELECT new com.food_easy_back.backend_food_easy.model.dto.product.SaleListDto(s.product.name, s.quantity, s.saleDate) " +
+    @Query("SELECT new com.food_easy_back.backend_food_easy.model.dto.product.SaleListDto(s.product.name,s.price, s.quantity, s.saleDate) " +
        "FROM SaleEntity s " +
        "WHERE FUNCTION('MONTH', s.saleDate) = :month " +
        "AND FUNCTION('YEAR', s.saleDate) = :year AND s.product.category.store.idStore = :idStore")

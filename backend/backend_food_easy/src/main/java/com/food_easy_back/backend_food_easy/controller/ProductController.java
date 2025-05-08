@@ -330,6 +330,7 @@ public class ProductController {
             saleService.saveSale(SaleEntity.builder()
                                         .quantity(productDto.getQuantity())
                                         .product(product)
+                                        .price(productDto.getQuantity()*product.getPrice())
                                         .build());
             ProductSaveDto productdto = ProductSaveDto.builder()
                                                 .name(product.getName())
