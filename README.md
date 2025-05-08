@@ -14,9 +14,6 @@ Stack tecnológico (backend):
 -Lombok
 -Swagger
 
-Stack tecnológico (frontend): 
-
--POR DEFINIR
 
 Arquitectura general : En este proyecto se uso la arquitectura por capas en la cuál se busca cumplir con el principio de separación de responsabilidades, de tal forma que cada capa se encarga de una tarea definida. Tenemos la capa de presentación que se encarga de presentar la información al usuario de manera agradable y fluida al usuario, la capa de negocio que se encarga de aplicar las reglas de negocio y validaciones, la capa de persistencia que se encarga de comunicarse con la base de datos y darle las respectivas instrucciones y finalmente la capa de base de datos que se encarga de almacenar y administras la información correspondiente a las necesidades del negocio.
 
@@ -29,25 +26,7 @@ Diagrama de arquitectura: La arquitectura por capas divide el software en módul
 
 
 
-3. Frontend POR DEFINIR
-
-
-Tecnologías y frameworks utilizados.
-
-Estructura de carpetas del frontend.
-
-Componentes principales y su propósito.
-
-Ruteo.
-
-Integración con backend .
-
-Control de errores.
-
-Sistema de diseño.
-
-
-4. Backend
+3. Backend
 
 
 Lenguaje y framework : Java con Spring Boot
@@ -100,8 +79,6 @@ Permite registrar las ventas realizadas, actualizando automáticamente el stock 
 Autenticación y autorización:
 El backend verifica credenciales de usuario (autenticación) y asegura que solo usuarios con permisos adecuados puedan realizar acciones específicas (autorización), usando JWT.
 
-Manejo de errores (pendiente)
-
 Autenticación y autorización: La autorización ocurre mediante el backend con validaciones mediante el filtro de spring security (SecurityFilterChain) en el cual se validan las url y los usuarios que pueden o no realizar acciones mediante JWT.
 
 Conexión con base de datos:
@@ -113,7 +90,7 @@ Hibernate: proveedor ORM que gestiona la conversión entre entidades Java y tabl
 Datasource configurado en application.properties: define los parámetros de conexión (URL, usuario, contraseña, dialecto).
 
 
-5. Seguridad
+4. Seguridad
 
 
 En el proyecto se implementaron varias medidas de seguridad clave para proteger tanto los datos como el acceso a la aplicación:
@@ -136,7 +113,7 @@ Implementación de JWT (JSON Web Tokens) para la autenticación sin estado (stat
 Los tokens se generan tras un login exitoso y se usan para autenticar las solicitudes subsecuentes, reduciendo la exposición de credenciales sensibles.
 
 
-6. Proceso de despliegue (manual)
+5. Proceso de despliegue (manual)
 
 
 1️⃣ Preparar Docker Compose para entorno local
@@ -244,21 +221,9 @@ Render	Despliegue en la nube (sin Compose, usando servicios web independientes y
 MySQL (externo)	Base de datos en la nube (Render Database, PlanetScale, AWS RDS, etc.).
 
 
-7. Guía de Instalación
+6. Guía de Instalación
 
 
 Consulta la [Guía de Instalación del backend](./backend/backend_food_easy/README.md) para más detalles.
 
 
-8. Uso del Proyecto
-
-
-Flujo de uso de la aplicación (registro, login, navegación).
-
-Ejemplos visuales o capturas de pantalla.
-
-9. Consideraciones Finales
-
-Retos encontrados.
-
-Posibles mejoras futuras.
