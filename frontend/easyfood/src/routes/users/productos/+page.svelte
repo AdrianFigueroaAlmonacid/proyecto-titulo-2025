@@ -115,22 +115,30 @@
 		}
 
 		const productosAgrupados = {};
+		let totalVentasMes = 0; 
+
 		productosVendidos.forEach(p => {
 			if (productosAgrupados[p.nameProduct]) {
-				productosAgrupados[p.nameProduct] += p.quantity;
+				productosAgrupados[p.nameProduct].quantity += p.quantity;
+				productosAgrupados[p.nameProduct].totalPrice += p.price;
 			} else {
-				productosAgrupados[p.nameProduct] = p.quantity;
+				productosAgrupados[p.nameProduct] = {
+					quantity: p.quantity,
+					totalPrice: p.price
+				};
 			}
+			totalVentasMes += p.price;
 		});
 
-		const productosResumen = Object.entries(productosAgrupados).map(([nombre, cantidad]) => ({
+		const productosResumen = Object.entries(productosAgrupados).map(([nombre, data]) => ({
 			nameProduct: nombre,
-			quantity: cantidad
+			quantity: data.quantity,
+			totalPrice: data.totalPrice
 		}));
 
 		const doc = new jsPDF();
 		let baseY = 20;
-		let productosPorPagina = 5; 
+		let productosPorPagina = 5;
 
 		doc.text('INFORME DE PRODUCTOS VENDIDOS ESTE MES', 20, 10);
 
@@ -144,9 +152,17 @@
 			doc.text(`Producto ${index + 1}:`, 20, baseY);
 			doc.text(`Nombre: ${p.nameProduct}`, 20, baseY + 10);
 			doc.text(`Cantidad Total Vendida: ${p.quantity}`, 20, baseY + 20);
+			doc.text(`Total Venta: $${p.totalPrice.toLocaleString()}`, 20, baseY + 30);
 
-			baseY += 40; 
+			baseY += 50; 
 		});
+
+		if (baseY + 20 > doc.internal.pageSize.height) {
+			doc.addPage();
+			baseY = 20;
+		}
+
+		doc.text(`VENTAS TOTALES DEL MES: $${totalVentasMes.toLocaleString()}`, 20, baseY);
 
 		doc.save('informe_productos_vendidos.pdf');
 	}
